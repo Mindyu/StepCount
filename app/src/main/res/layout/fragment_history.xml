@@ -10,7 +10,8 @@
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:fitsSystemWindows="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

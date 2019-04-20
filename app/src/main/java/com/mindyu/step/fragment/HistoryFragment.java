@@ -8,7 +8,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,9 +15,10 @@ import android.widget.TextView;
 import com.mindyu.step.R;
 import com.mindyu.step.adapter.CommonAdapter;
 import com.mindyu.step.adapter.CommonViewHolder;
-import com.mindyu.step.step.bean.StepData;
-import com.mindyu.step.step.utils.DbUtils;
+import com.mindyu.step.step.bean.StepCountData;
 import com.orhanobut.logger.Logger;
+
+import org.litepal.LitePal;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ import java.util.List;
  */
 public class HistoryFragment extends Fragment {
 
-    private LinearLayout layout_titlebar;
+    // private LinearLayout layout_titlebar;
     private ListView lv;
 
     private void assignViews(View view) {
-        layout_titlebar = view.findViewById(R.id.layout_titlebar);
+        // layout_titlebar = view.findViewById(R.id.layout_titlebar);
         lv = view.findViewById(R.id.lv);
     }
 
@@ -51,25 +51,23 @@ public class HistoryFragment extends Fragment {
 
     private void initData() {
         setEmptyView(lv);
-        if(DbUtils.getLiteOrm()==null){
-            DbUtils.createDb(this.getContext(), "jingzhi");
-        }
-        List<StepData> stepDatas =DbUtils.getQueryAll(StepData.class);
-        Logger.d("stepDatas="+stepDatas);
-        lv.setAdapter(new CommonAdapter<StepData>(this.getContext(),stepDatas,R.layout.item) {
+        List<StepCountData> stepCountData = LitePal.findAll(StepCountData.class);
+        Logger.d("stepDatas="+ stepCountData);
+        lv.setAdapter(new CommonAdapter<StepCountData>(this.getContext(), stepCountData,R.layout.item) {
             @Override
-            protected void convertView(View item, StepData stepData) {
+            protected void convertView(View item, StepCountData stepCountData) {
                 TextView tv_date= CommonViewHolder.get(item,R.id.tv_date);
                 TextView tv_step= CommonViewHolder.get(item,R.id.tv_step);
-                tv_date.setText(stepData.getToday());
-                tv_step.setText(stepData.getStep()+"步");
+                tv_date.setText(stepCountData.getToday());
+                tv_step.setText(stepCountData.getStep()+"步");
             }
         });
     }
 
     protected <T extends View> T setEmptyView(ListView listView) {
         TextView emptyView = new TextView(this.getContext());
-        emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         emptyView.setText("暂无数据！");
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);

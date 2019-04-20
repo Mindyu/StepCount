@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="sport_management_db"></dbname>
+    <version value="1"></version>
+    <list>
+        <mapping class="com.mindyu.step.user.bean.User"></mapping>
+        <mapping class="com.mindyu.step.step.bean.StepCountData"></mapping>
+    </list>
+</litepal>
