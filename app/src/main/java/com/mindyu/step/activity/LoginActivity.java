@@ -7,6 +7,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -46,12 +48,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox cbRememberPass;
+    private CheckBox autologin;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        initViews();
+        initText();
+    }
+
+    private void initViews() {
         mUserNameView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -67,6 +77,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+        cbRememberPass = (CheckBox) findViewById(R.id.cbRememberPass);
+        autologin = (CheckBox) findViewById(R.id.autologin);
+
         Button mNameSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mNameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -77,6 +90,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void initText() {
+        sp = getSharedPreferences("userInfo", 0);
+        String name = sp.getString("USER_NAME", "");
+        String pass = sp.getString("PASSWORD", "");
+
+        boolean choseRemember = sp.getBoolean("cbRememberPass", false);
+        boolean choseAutoLogin = sp.getBoolean("autologin", false);
+        boolean directLogin = sp.getBoolean("directlogin", false);
+
+        mUserNameView.setText(name);
+        //如果上次选了记住密码，那进入登录页面也自动勾选记住密码，并填上用户名和密码
+        if (choseRemember) {
+            mPasswordView.setText(pass);
+            cbRememberPass.setChecked(true);
+
+            //如果上次登录选了自动登录，那进入登录页面也自动勾选自动登录
+            if (choseAutoLogin) {
+                autologin.setChecked(true);
+                if (directLogin)
+                    attemptLogin();
+            }
+        }
     }
 
     private void populateAutoComplete() {
@@ -241,6 +278,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
+                SharedPreferences.Editor editor = sp.edit();
+                //保存用户名和密码
+                editor.putString("USER_NAME", mName);
+                editor.putString("PASSWORD", mPassword);
+                //是否记住密码
+                editor.putBoolean("cbRememberPass", cbRememberPass.isChecked());
+                //是否自动登录
+                editor.putBoolean("autologin", autologin.isChecked());
+                if (autologin.isChecked())
+                    editor.putBoolean("directlogin", true);
+                editor.commit();
+
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("username", mName);
