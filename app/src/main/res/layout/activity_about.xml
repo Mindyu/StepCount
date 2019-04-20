@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".activity.AboutActivity">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_marginTop="100dp"
         android:textAlignment="center"
         android:textSize="28sp"
+        android:textColor="@color/black"
         android:text="运动管理系统"/>
 
     <TextView
@@ -20,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:text="Made by 琪琪"/>
-
 
 </LinearLayout>
