@@ -1,10 +1,11 @@
-package com.mindyu.step.activity;
+package com.mindyu.step.fragment;
+
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,55 +13,50 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.orhanobut.logger.Logger;
-
-import java.util.List;
-
 import com.mindyu.step.R;
 import com.mindyu.step.adapter.CommonAdapter;
 import com.mindyu.step.adapter.CommonViewHolder;
 import com.mindyu.step.step.bean.StepData;
 import com.mindyu.step.step.utils.DbUtils;
+import com.orhanobut.logger.Logger;
+
+import java.util.List;
+
 
 /**
- * Created by yuandl on 2016-10-18.
+ * A simple {@link Fragment} subclass.
  */
+public class HistoryFragment extends Fragment {
 
-public class HistoryActivity extends AppCompatActivity {
     private LinearLayout layout_titlebar;
-    private ImageView iv_left;
-    private ImageView iv_right;
     private ListView lv;
 
-    private void assignViews() {
-        layout_titlebar = (LinearLayout) findViewById(R.id.layout_titlebar);
-        iv_left = (ImageView) findViewById(R.id.iv_left);
-        iv_right = (ImageView) findViewById(R.id.iv_right);
-        lv = (ListView) findViewById(R.id.lv);
+    private void assignViews(View view) {
+        layout_titlebar = view.findViewById(R.id.layout_titlebar);
+        lv = view.findViewById(R.id.lv);
+    }
+
+    public HistoryFragment() {
+
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_history);
-        assignViews();
-        iv_left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               finish();
-            }
-        });
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        assignViews(view);
         initData();
+        return view;
     }
 
     private void initData() {
         setEmptyView(lv);
         if(DbUtils.getLiteOrm()==null){
-            DbUtils.createDb(this, "jingzhi");
+            DbUtils.createDb(this.getContext(), "jingzhi");
         }
         List<StepData> stepDatas =DbUtils.getQueryAll(StepData.class);
         Logger.d("stepDatas="+stepDatas);
-        lv.setAdapter(new CommonAdapter<StepData>(this,stepDatas,R.layout.item) {
+        lv.setAdapter(new CommonAdapter<StepData>(this.getContext(),stepDatas,R.layout.item) {
             @Override
             protected void convertView(View item, StepData stepData) {
                 TextView tv_date= CommonViewHolder.get(item,R.id.tv_date);
@@ -72,7 +68,7 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     protected <T extends View> T setEmptyView(ListView listView) {
-        TextView emptyView = new TextView(this);
+        TextView emptyView = new TextView(this.getContext());
         emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         emptyView.setText("暂无数据！");
         emptyView.setGravity(Gravity.CENTER);

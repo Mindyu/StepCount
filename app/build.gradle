@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
     compile 'com.orhanobut:logger:1.8'
+    compile 'com.hjm:BottomTabBar:1.2.2'
 }

@@ -38,9 +38,6 @@
         <activity
             android:name="com.mindyu.step.activity.SetPlanActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
-            android:name="com.mindyu.step.activity.HistoryActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
             android:name="com.mindyu.step.step.service.StepService"
