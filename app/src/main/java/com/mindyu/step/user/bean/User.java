@@ -1,0 +1,65 @@
+package com.mindyu.step.user.bean;
+
+import org.litepal.crud.LitePalSupport;
+
+import java.io.Serializable;
+
+public class User extends LitePalSupport implements Serializable{
+
+    private Integer id;
+    private String userName;
+    private String password;
+    private String avator;
+    private String email;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getAvator() {
+        return avator;
+    }
+
+    public void setAvator(String avator) {
+        this.avator = avator;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", avator='" + avator + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+}

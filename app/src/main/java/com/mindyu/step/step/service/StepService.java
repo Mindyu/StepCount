@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.mindyu.step.step.bean.StepCountData;
 import com.orhanobut.logger.Logger;
 
 import java.text.SimpleDateFormat;
@@ -30,8 +31,8 @@ import com.mindyu.step.activity.MainActivity;
 import com.mindyu.step.step.UpdateUiCallBack;
 import com.mindyu.step.step.accelerometer.StepCount;
 import com.mindyu.step.step.accelerometer.StepValuePassListener;
-import com.mindyu.step.step.bean.StepData;
-import com.mindyu.step.step.utils.DbUtils;
+
+import org.litepal.LitePal;
 
 public class StepService extends Service implements SensorEventListener {
     private String TAG = "StepService";
@@ -143,10 +144,9 @@ public class StepService extends Service implements SensorEventListener {
      */
     private void initTodayData() {
         CURRENT_DATE = getTodayDate();
-        DbUtils.createDb(this, "DylanStepCount");
-        DbUtils.getLiteOrm().setDebugged(false);
         //获取当天的数据，用于展示
-        List<StepData> list = DbUtils.getQueryByWhere(StepData.class, "today", new String[]{CURRENT_DATE});
+        List<StepCountData> list = LitePal.where("today = ?", CURRENT_DATE).
+                find(StepCountData.class);
         if (list.size() == 0 || list.isEmpty()) {
             CURRENT_STEP = 0;
         } else if (list.size() == 1) {
@@ -533,16 +533,17 @@ public class StepService extends Service implements SensorEventListener {
     private void save() {
         int tempStep = CURRENT_STEP;
 
-        List<StepData> list = DbUtils.getQueryByWhere(StepData.class, "today", new String[]{CURRENT_DATE});
+        List<StepCountData> list = LitePal.where("today = ?", CURRENT_DATE).
+                find(StepCountData.class);
         if (list.size() == 0 || list.isEmpty()) {
-            StepData data = new StepData();
+            StepCountData data = new StepCountData();
             data.setToday(CURRENT_DATE);
             data.setStep(tempStep + "");
-            DbUtils.insert(data);
+            data.save();
         } else if (list.size() == 1) {
-            StepData data = list.get(0);
+            StepCountData data = list.get(0);
             data.setStep(tempStep + "");
-            DbUtils.update(data);
+            data.save();
         } else {
         }
     }
@@ -553,7 +554,6 @@ public class StepService extends Service implements SensorEventListener {
         super.onDestroy();
         //取消前台进程
         stopForeground(true);
-        DbUtils.closeDb();
         unregisterReceiver(mBatInfoReceiver);
         Logger.d("stepService关闭");
     }

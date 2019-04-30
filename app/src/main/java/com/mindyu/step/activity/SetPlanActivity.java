@@ -12,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.mindyu.step.R;
+import com.mindyu.step.step.utils.SharedPreferencesUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,12 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.mindyu.step.R;
-import com.mindyu.step.step.utils.SharedPreferencesUtils;
-
-/**
- * Created by yuandl on 2016-10-18.
- */
 
 public class SetPlanActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -141,16 +138,7 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
         int minute = calendar.get(Calendar.MINUTE);
 //        String time = tv_remind_time.getText().toString().trim();
         final DateFormat df = new SimpleDateFormat("HH:mm");
-//        Date date = null;
-//        try {
-//            date = df.parse(time);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (null != date) {
-//            calendar.setTime(date);
-//        }
+
         new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

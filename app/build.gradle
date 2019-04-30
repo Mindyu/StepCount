@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "com.mindyu.step"
         minSdkVersion 17
@@ -20,11 +19,23 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
-    testCompile 'junit:junit:4.12'
-    compile 'com.orhanobut:logger:1.8'
+    implementation 'com.android.support:appcompat-v7:26.+'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.orhanobut:logger:1.8'
+    implementation 'com.hjm:BottomTabBar:1.2.2'                                // 底部导航栏
+    implementation 'com.makeramen:roundedimageview:2.2.1'                             // 圆形头像
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-5'   // 上拉刷新下拉加载
+    implementation 'org.litepal.android:core:2.0.0'
+    implementation 'com.android.support:design:26.+'
+    implementation 'com.android.support:support-v4:26.+'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'jp.wasabeef:glide-transformations:2.0.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+
 }

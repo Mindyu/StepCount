@@ -13,7 +13,6 @@ import android.view.View;
 import com.mindyu.step.R;
 
 /**
- * Created by DylanAndroid on 2016/5/26.
  * 显示步数的圆弧
  */
 public class StepArcView extends View {
@@ -70,13 +69,13 @@ public class StepArcView extends View {
         /**指定圆弧的外轮廓矩形区域*/
         RectF rectF = new RectF(0 + borderWidth, borderWidth, 2 * centerX - borderWidth, 2 * centerX - borderWidth);
 
-        /**【第一步】绘制整体的黄色圆弧*/
+        /**  绘制整体的黄色圆弧  */
         drawArcYellow(canvas, rectF);
-        /**【第二步】绘制当前进度的红色圆弧*/
+        /**  绘制当前进度的红色圆弧  */
         drawArcRed(canvas, rectF);
-        /**【第三步】绘制当前进度的红色数字*/
+        /**  绘制当前进度的红色数字  */
         drawTextNumber(canvas, centerX);
-        /**【第四步】绘制"步数"的红色数字*/
+        /**  绘制"步数"的红色数字*/
         drawTextStepString(canvas, centerX);
     }
 
