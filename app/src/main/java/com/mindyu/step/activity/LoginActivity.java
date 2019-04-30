@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,12 +29,28 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mindyu.step.R;
 import com.mindyu.step.user.bean.Result;
+import com.mindyu.step.user.bean.User;
 import com.mindyu.step.user.dao.UserDao;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -255,6 +272,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mName;
         private final String mPassword;
+        private Result<User> result;
         private String errorMassage;
 
         UserLoginTask(String email, String password) {
@@ -265,11 +283,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            UserDao userDao = UserDao.getInstance();
-            Result result = userDao.login(mName, mPassword);
-            // Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT);
-            errorMassage = result.getMessage();
-            return result.isSuccess();
+//            UserDao userDao = UserDao.getInstance();
+//            Result result = userDao.login(mName, mPassword);
+//            errorMassage = result.getMessage();
+
+            OkHttpClient httpclient = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            User user = new User();
+            user.setUserName(mName);
+            user.setPassword(mPassword);
+            Gson gson=new Gson();
+            //将对象转换为诶JSON格式字符串
+            String jsonStr=gson.toJson(user);
+            RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url("http://188.131.213.13:9000/user/login")
+                    .post(body)
+                    .build();
+            try {
+                Log.d("Request:", request.toString());
+                Response response = httpclient.newCall(request).execute();
+                String data = response.body().string();
+
+                Log.d("Response:", data);
+                result = parseJSonWithGSON(data);
+                if (result.getCode() == 200){
+                    return true;
+                }
+                errorMassage = result.getMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        private Result<User> parseJSonWithGSON(final String data) {
+            Gson gson = new Gson();
+
+            Result<User> result = gson.fromJson(data, new TypeToken<Result<User>>() {
+            }.getType());
+
+            return result;
         }
 
         @Override
