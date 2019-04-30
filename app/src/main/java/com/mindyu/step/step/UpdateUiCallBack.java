@@ -2,7 +2,6 @@ package com.mindyu.step.step;
 
 /**
  * 步数更新回调
- * Created by dylan on 16/9/27.
  */
 public interface UpdateUiCallBack {
     /**

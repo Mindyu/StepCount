@@ -1,9 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    tools:context="com.mindyu.step.fragment.UserFragment">
+    android:background="@color/white"
+    tools:context=".activity.UserAvatarActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,32 +13,42 @@
         android:orientation="vertical">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/user_information"
+            android:id="@+id/user_photo"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="用户信息"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="3dp"
+                android:gravity="center"
+                android:text="头像"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="0px"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/show_photo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="3dp"
+                android:src="@mipmap/logo"
+                android:layout_gravity="center"
+                app:riv_border_color="#333333"
+                app:riv_border_width="2dp"
+                app:riv_oval="true" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="center"
                 android:layout_marginRight="3dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_arrow" />
 
         </LinearLayout>
@@ -47,34 +59,32 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/user_management"
+            android:id="@+id/user_nickname"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="用户管理"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="昵称"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="0px"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="center"
                 android:layout_marginRight="3dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_arrow" />
-
         </LinearLayout>
 
         <View
@@ -83,34 +93,68 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/date_update"
+            android:id="@+id/user_gender"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="数据同步"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="性别"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="0px"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="center"
                 android:layout_marginRight="3dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_arrow" />
 
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/black_text" />
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/user_birth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="出生年月"
+                android:textColor="@color/black_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="3dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_arrow" />
         </LinearLayout>
 
         <View
@@ -119,34 +163,32 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/soft_update"
+            android:id="@+id/user_height"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="软件更新"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="身高"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="0px"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="center"
                 android:layout_marginRight="3dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_arrow" />
-
         </LinearLayout>
 
         <View
@@ -155,83 +197,41 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/sensor_test"
+            android:id="@+id/user_weight"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="传感器诊断"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="体重"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="0px"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="center"
                 android:layout_marginRight="3dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_arrow" />
-
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:background="@color/black_text" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/about_system"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="62px"
-                android:text="关于系统"
-                android:textColor="@color/black_text"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="0px"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/black_text" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="6"></LinearLayout>
 
     </LinearLayout>
 
-
 </FrameLayout>
+
+

@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mindyu.step">
-
-    <!-- 计歩 -->
+    <!-- 访问SD卡的权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 计歩需要的权限 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
@@ -27,19 +27,22 @@
     <application
         android:name=".app.MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/logo"
+        android:icon="@mipmap/logo2"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.UserActivity"></activity>
-        <activity android:name=".activity.AboutActivity"></activity>
-        <activity android:name=".activity.MainActivity"></activity>
-        <activity android:name=".activity.SetPlanActivity"></activity>
+        <activity android:name=".activity.UserGenderActivity" />
+        <activity android:name=".activity.UserActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.SetPlanActivity" />
+        <activity android:name=".activity.UserAvatarActivity" />
         <activity
             android:name=".activity.LoginActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -74,7 +77,18 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
-        </service>
+        </service> <!-- 内容提供器注册 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.mindyu.step.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <!-- 指定Uri的共享路径 -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

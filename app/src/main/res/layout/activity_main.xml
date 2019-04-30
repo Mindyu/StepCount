@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:hjm="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
     tools:context="com.mindyu.step.activity.MainActivity">
+
 
     <com.hjm.bottomtabbar.BottomTabBar
         android:id="@+id/bottom_bar"
@@ -24,4 +26,5 @@
         hjm:tab_unselected_color="#282828">
 
     </com.hjm.bottomtabbar.BottomTabBar>
+
 </RelativeLayout>

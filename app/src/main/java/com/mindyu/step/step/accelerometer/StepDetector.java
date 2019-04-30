@@ -1,8 +1,6 @@
 package com.mindyu.step.step.accelerometer;
 
-/**
- * Created by dylan on 16/9/27.
- */
+
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

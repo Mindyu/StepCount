@@ -16,7 +16,6 @@
     <string name="error_invalid_password">密码至少为6位</string>
     <string name="error_incorrect_password">密码不正确</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
     </string>
 </resources>

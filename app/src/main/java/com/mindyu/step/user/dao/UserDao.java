@@ -7,11 +7,6 @@ import org.litepal.LitePal;
 
 import java.util.List;
 
-
-/**
- * Created by YCQ on 2018/12/18.
- */
-
 public class UserDao {
 
     private static UserDao userDao = null;

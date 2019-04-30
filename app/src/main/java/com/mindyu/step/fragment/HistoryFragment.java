@@ -8,7 +8,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,12 +27,12 @@ import java.util.List;
  */
 public class HistoryFragment extends Fragment {
 
-    // private LinearLayout layout_titlebar;
     private ListView lv;
+//    private SwipeRefreshLayout swipeRefresh;
 
     private void assignViews(View view) {
-        // layout_titlebar = view.findViewById(R.id.layout_titlebar);
         lv = view.findViewById(R.id.lv);
+//        swipeRefresh = view.findViewById(R.id.swipe_refresh);
     }
 
     public HistoryFragment() {
@@ -41,8 +40,7 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         assignViews(view);
         initData();
@@ -52,16 +50,21 @@ public class HistoryFragment extends Fragment {
     private void initData() {
         setEmptyView(lv);
         List<StepCountData> stepCountData = LitePal.findAll(StepCountData.class);
-        Logger.d("stepDatas="+ stepCountData);
-        lv.setAdapter(new CommonAdapter<StepCountData>(this.getContext(), stepCountData,R.layout.item) {
+        Logger.d("stepDatas=" + stepCountData);
+        lv.setAdapter(new CommonAdapter<StepCountData>(this.getContext(), stepCountData, R.layout.item) {
             @Override
             protected void convertView(View item, StepCountData stepCountData) {
-                TextView tv_date= CommonViewHolder.get(item,R.id.tv_date);
-                TextView tv_step= CommonViewHolder.get(item,R.id.tv_step);
+                TextView tv_date = CommonViewHolder.get(item, R.id.tv_date);
+                TextView tv_step = CommonViewHolder.get(item, R.id.tv_step);
                 tv_date.setText(stepCountData.getToday());
-                tv_step.setText(stepCountData.getStep()+"步");
+                tv_step.setText(stepCountData.getStep() + "步");
             }
         });
+
+//        // 下拉刷新
+//        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+//        swipeRefresh.setOnRefreshListener(this); // 设置刷新监听
+
     }
 
     protected <T extends View> T setEmptyView(ListView listView) {
@@ -76,4 +79,14 @@ public class HistoryFragment extends Fragment {
         listView.setEmptyView(emptyView);
         return (T) emptyView;
     }
+
+//    @Override
+//    public void onRefresh() {
+//        swipeRefresh.postDelayed(new Runnable() { // 发送延迟消息到消息队列
+//            @Override
+//            public void run() {
+//                swipeRefresh.setRefreshing(false); // 是否显示刷新进度;false:不显示
+//            }
+//        }, 3000);
+//    }
 }

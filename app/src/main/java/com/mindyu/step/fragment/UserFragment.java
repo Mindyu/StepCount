@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.mindyu.step.R;
 import com.mindyu.step.activity.AboutActivity;
 import com.mindyu.step.activity.UserActivity;
+import com.mindyu.step.activity.UserAvatarActivity;
 
 
 /**
@@ -19,6 +20,7 @@ import com.mindyu.step.activity.UserActivity;
  */
 public class UserFragment extends Fragment {
 
+    private LinearLayout user_information;
     private LinearLayout user_management;
     private LinearLayout date_update;
     private LinearLayout soft_update;
@@ -39,6 +41,7 @@ public class UserFragment extends Fragment {
     }
 
     public void initView(View view) {
+        user_information = view.findViewById(R.id.user_information);
         user_management = view.findViewById(R.id.user_management);
         date_update = view.findViewById(R.id.date_update);
         soft_update = view.findViewById(R.id.soft_update);
@@ -47,6 +50,14 @@ public class UserFragment extends Fragment {
     }
 
     public void initEvent() {
+
+        user_information.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserAvatarActivity.class);
+                startActivity(intent);
+            }
+        });
         user_management.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

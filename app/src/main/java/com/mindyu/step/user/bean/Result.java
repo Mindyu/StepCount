@@ -1,9 +1,5 @@
 package com.mindyu.step.user.bean;
 
-/**
- * Created by YCQ on 2018/12/18.
- */
-
 public class Result {
 
     private boolean success;

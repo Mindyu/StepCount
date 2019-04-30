@@ -4,10 +4,6 @@ import org.litepal.crud.LitePalSupport;
 
 import java.io.Serializable;
 
-/**
- * Created by YCQ on 2018/12/18.
- */
-
 public class User extends LitePalSupport implements Serializable{
 
     private String username;

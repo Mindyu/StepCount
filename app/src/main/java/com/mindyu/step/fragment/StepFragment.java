@@ -22,14 +22,12 @@ import com.mindyu.step.view.StepArcView;
 
 public class StepFragment extends Fragment implements View.OnClickListener {
 
-//    private TextView tv_data;
     private StepArcView cc;
     private TextView tv_set;
     private TextView tv_isSupport;
     private SharedPreferencesUtils sp;
 
     private void assignViews(View view) {
-//        tv_data = view.findViewById(R.id.tv_data);
         cc = view.findViewById(R.id.cc);
         tv_set = view.findViewById(R.id.tv_set);
         tv_isSupport = view.findViewById(R.id.tv_isSupport);
@@ -41,8 +39,7 @@ public class StepFragment extends Fragment implements View.OnClickListener {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_step, container, false);
         assignViews(view);
         initData();
@@ -52,13 +49,12 @@ public class StepFragment extends Fragment implements View.OnClickListener {
 
     private void addListener() {
         tv_set.setOnClickListener(this);
-//        tv_data.setOnClickListener(this);
     }
 
     private void initData() {
         sp = new SharedPreferencesUtils(this.getContext());
-        //获取用户设置的计划锻炼步数，没有设置过的话默认7000
-        String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
+        //获取用户设置的计划锻炼步数，没有设置过的话默认10000
+        String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
         //设置当前步数为0
         cc.setCurrentCount(Integer.parseInt(planWalk_QTY), 0);
         tv_isSupport.setText("计步中...");
@@ -124,9 +120,6 @@ public class StepFragment extends Fragment implements View.OnClickListener {
             case R.id.tv_set:
                 startActivity(new Intent(this.getContext(), SetPlanActivity.class));
                 break;
-//            case R.id.tv_data:
-//                startActivity(new Intent(this.getContext(), HistoryActivity.class));
-//                break;
         }
     }
 
