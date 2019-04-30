@@ -38,6 +38,7 @@ public class UserActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                 startActivity(intent);
+                UserActivity.this.finish();    // 退出之后不能回退
             }
         });
     }

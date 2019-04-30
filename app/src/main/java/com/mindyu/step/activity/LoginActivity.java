@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mindyu.step.R;
+import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
 import com.mindyu.step.user.dao.UserDao;
@@ -308,10 +309,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 Log.d("Response:", data);
                 result = parseJSonWithGSON(data);
+                errorMassage = result.getMessage();
                 if (result.getCode() == 200){
                     return true;
                 }
-                errorMassage = result.getMessage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -332,7 +333,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (success && result.getData()!=null) {
                 SharedPreferences.Editor editor = sp.edit();
                 //保存用户名和密码
                 editor.putString("USER_NAME", mName);
@@ -345,6 +346,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     editor.putBoolean("directlogin", true);
                 editor.commit();
 
+                SystemParameter.user = result.getData();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("username", mName);

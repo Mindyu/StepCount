@@ -12,6 +12,9 @@
     <string name="prompt_password">密码</string>
     <string name="action_sign_in">登录或注册</string>
     <string name="action_sign_in_short">登录</string>
+    <string name="action_register_in_short">注册</string>
+    <string name="to_register">还没有账号，去注册</string>
+    <string name="back_sign">返回登陆</string>
     <string name="error_invalid_email">用户名不存在</string>
     <string name="error_invalid_password">密码至少为6位</string>
     <string name="error_incorrect_password">密码不正确</string>
