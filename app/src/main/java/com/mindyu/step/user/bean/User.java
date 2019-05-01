@@ -6,16 +6,18 @@ import java.io.Serializable;
 
 public class User extends LitePalSupport implements Serializable{
 
-    private String username;
-
+    private Integer id;
+    private String userName;
     private String password;
+    private String avator;
+    private String email;
 
-    public String getUsername() {
-        return username;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getPassword() {
@@ -24,5 +26,40 @@ public class User extends LitePalSupport implements Serializable{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getAvator() {
+        return avator;
+    }
+
+    public void setAvator(String avator) {
+        this.avator = avator;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", avator='" + avator + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

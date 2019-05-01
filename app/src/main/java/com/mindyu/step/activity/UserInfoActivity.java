@@ -2,7 +2,6 @@ package com.mindyu.step.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
@@ -18,23 +18,46 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.mindyu.step.R;
+import com.mindyu.step.parameter.SystemParameter;
+import com.mindyu.step.user.bean.Info;
+import com.mindyu.step.user.bean.Result;
+import com.mindyu.step.user.bean.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
-public class UserAvatarActivity extends Activity implements View.OnClickListener {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private final static String TAG = "UserInfoActivity";
 
     private View inflate;
     private TextView takePhoto;
@@ -42,7 +65,14 @@ public class UserAvatarActivity extends Activity implements View.OnClickListener
     private TextView cancel;
     private Dialog dialog;
 
-    private LinearLayout user_photo;
+    private EditText name_tv;
+    private EditText birth_tv;
+    private EditText height_tv;
+    private EditText weight_tv;
+    private EditText address_tv;
+    private EditText intro_tv;
+
+    private LinearLayout avator_layout;
     private RoundedImageView show_photo;
     private Uri imageUri;
 
@@ -55,17 +85,87 @@ public class UserAvatarActivity extends Activity implements View.OnClickListener
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_user_info);
 
-        show_photo = findViewById(R.id.show_photo);
-        user_photo = findViewById(R.id.user_photo);
-        user_photo.setOnClickListener(new View.OnClickListener() {
+        initView();
+        initData();
+
+        avator_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                init_show(view);
+                showPhotoDialog(view);
             }
         });
     }
 
-    public void init_show(View view) {
+    private void initView(){
+        show_photo = findViewById(R.id.avator_iv);
+        avator_layout = findViewById(R.id.avator_layout);
+        name_tv = findViewById(R.id.name_tv);
+        birth_tv = findViewById(R.id.birth_tv);
+        height_tv = findViewById(R.id.height_tv);
+        weight_tv = findViewById(R.id.weight_tv);
+        address_tv = findViewById(R.id.address_tv);
+        intro_tv = findViewById(R.id.intro_tv);
+    }
+
+    private void initData() {
+        Integer userId = SystemParameter.user.getId();
+        name_tv.setText(SystemParameter.user.getUserName());
+
+        refreshView();
+
+        if (SystemParameter.info==null) new UserInfoTask().execute(userId);
+    }
+
+    public class UserInfoTask extends AsyncTask<Integer, Void, Info> {
+
+        @Override
+        protected Info doInBackground(Integer... integers) {
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("http://188.131.213.13:9000/info/" + integers[0])
+                    .build();
+            Log.d(TAG, "request url: "+ request);
+            Call call = okHttpClient.newCall(request);
+            try {
+                Response response = call.execute();
+                if (response.body()==null) {
+                    Log.d(TAG, "onResponse: 获取用户信息失败");
+                    return null;
+                }
+                String data = response.body().string();
+                Log.d(TAG, "onResponse: "+data);
+
+                Gson gson = new Gson();
+                Info result = gson.fromJson(data, new TypeToken<Info>() {
+                }.getType());
+
+                if (result!= null){
+                    return result;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Info info) {
+            SystemParameter.info = info;
+            refreshView();
+        }
+    }
+
+    private void refreshView(){
+        if (SystemParameter.info==null) return;
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//显示2017-10-27格式
+        birth_tv.setText(sdf.format(SystemParameter.info.getBirthday()));
+        height_tv.setText(String.valueOf(SystemParameter.info.getHeight()));
+        weight_tv.setText(String.valueOf(SystemParameter.info.getWeight()));
+        address_tv.setText(SystemParameter.info.getAddress());
+        intro_tv.setText(SystemParameter.info.getIntro());
+    }
+
+    public void showPhotoDialog(View view) {
         dialog = new Dialog(this, R.style.BottomDialogTheme);
         //填充对话框的布局
         inflate = LayoutInflater.from(this).inflate(R.layout.choose_user_avatar, null);
@@ -110,6 +210,23 @@ public class UserAvatarActivity extends Activity implements View.OnClickListener
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.save_btn:     // 监听菜单按钮
+                // 保存用户详细信息
+                UserInfoActivity.this.finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //调用摄像头拍照
     public void takePhoto() {
@@ -124,7 +241,7 @@ public class UserAvatarActivity extends Activity implements View.OnClickListener
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-            imageUri = FileProvider.getUriForFile(UserAvatarActivity.this, "com.mindyu.step.fileprovider", outputImage);
+            imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
         } else {
 
             imageUri = Uri.fromFile(outputImage);
@@ -169,8 +286,8 @@ public class UserAvatarActivity extends Activity implements View.OnClickListener
 
     //从相册中选择照片
     public void chooseFromAlbum() {
-        if (ContextCompat.checkSelfPermission(UserAvatarActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(UserAvatarActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        if (ContextCompat.checkSelfPermission(UserInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(UserInfoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
             openAlbum();
         }

@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import com.mindyu.step.R;
 import com.mindyu.step.activity.AboutActivity;
 import com.mindyu.step.activity.UserActivity;
-import com.mindyu.step.activity.UserAvatarActivity;
+import com.mindyu.step.activity.UserInfoActivity;
 
 
 /**
@@ -54,7 +54,7 @@ public class UserFragment extends Fragment {
         user_information.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserAvatarActivity.class);
+                Intent intent = new Intent(getContext(), UserInfoActivity.class);
                 startActivity(intent);
             }
         });

@@ -30,9 +30,9 @@ public class UserDao {
      */
     public Result register(String username, String password){
         User user = new User();
-        user.setUsername(username);
+        user.setUserName(username);
         user.setPassword(password);
-        return user.save()? new Result(true, "注册成功"):new Result(false, "注册失败");
+        return user.save()? new Result(200, "注册成功"):new Result(500, "注册失败");
     }
 
     public Result login(String username, String password) {
@@ -40,11 +40,11 @@ public class UserDao {
                 .limit(1).find(User.class);
         if (userList == null || userList.size() == 0) {
             register(username, password);      // 不存在当前用户就注册一个
-            return new Result(false, "用户不存在，成功注册");
+            return new Result(500, "用户不存在，成功注册");
         } else if (password.equals(userList.get(0).getPassword())) {    // 验证成功
-            return new Result(true,"登录成功");
+            return new Result(200,"登录成功");
         }
-        return new Result(false, "用户密码不正确");
+        return new Result(500, "用户密码不正确");
     }
 
 }
