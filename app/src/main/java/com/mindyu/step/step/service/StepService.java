@@ -39,11 +39,11 @@ public class StepService extends Service implements SensorEventListener {
     /**
      * 默认为30秒进行一次存储
      */
-    private static int duration = 30 * 1000;
+    private static int duration = 60 * 1000;
     /**
      * 当前的日期
      */
-    private static String CURRENT_DATE = "";
+    public static String CURRENT_DATE = "";
     /**
      * 传感器管理对象
      */
@@ -59,7 +59,7 @@ public class StepService extends Service implements SensorEventListener {
     /**
      * 当前所走的步数
      */
-    private int CURRENT_STEP;
+    public static int CURRENT_STEP;
     /**
      * 计步传感器类型  Sensor.TYPE_STEP_COUNTER或者Sensor.TYPE_STEP_DETECTOR
      */
@@ -191,13 +191,12 @@ public class StepService extends Service implements SensorEventListener {
                     Log.d(TAG, "screen on");
                 } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                     Log.d(TAG, "screen off");
-                    //改为60秒一存储
-                    duration = 60000;
+                    //改为每5分钟一存储
+                    duration = 5*60*1000;
                 } else if (Intent.ACTION_USER_PRESENT.equals(action)) {
                     Log.d(TAG, "screen unlock");
-//                    save();
-                    //改为30秒一存储
-                    duration = 30000;
+                    //改为每分钟一存储
+                    duration = 60*1000;
                 } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
                     Log.i(TAG, " receive Intent.ACTION_CLOSE_SYSTEM_DIALOGS");
                     //保存一次
@@ -544,7 +543,6 @@ public class StepService extends Service implements SensorEventListener {
             StepCountData data = list.get(0);
             data.setStep(tempStep + "");
             data.save();
-        } else {
         }
     }
 

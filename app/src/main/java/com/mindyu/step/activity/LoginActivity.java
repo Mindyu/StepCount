@@ -331,7 +331,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
+            showProgress(true);
 
             if (success && result.getData()!=null) {
                 SharedPreferences.Editor editor = sp.edit();

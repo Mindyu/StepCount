@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.mindyu.step.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * 发现页面
  */
 public class HotTopicFragment extends Fragment {
 

@@ -8,7 +8,7 @@
 
 功能模块图：
 
-![1556643122880](C:\Users\YCQ\AppData\Local\Temp\1556643122880.png)
+![健康管理系统](https://hexoblog-1253306922.cos.ap-guangzhou.myqcloud.com/photo2019/%E5%81%A5%E5%BA%B7%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/%E5%81%A5%E5%BA%B7%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.png?q-sign-algorithm=sha1&q-ak=AKIDCXS8TRrdYCYMLR5lfDxGt222pwTmGz5G&q-sign-time=1556644333;1556646133&q-key-time=1556644333;1556646133&q-header-list=&q-url-param-list=&q-signature=4cc83fb2880db41aa28e5a9e91b1ebbbcf668d05&x-cos-security-token=ab6818ae9f0a443457edd856dab45f141aa6d96210001)
 
 
 

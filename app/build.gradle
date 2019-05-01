@@ -29,7 +29,7 @@ dependencies {
     implementation 'com.orhanobut:logger:1.8'
     implementation 'com.hjm:BottomTabBar:1.2.2'                                // 底部导航栏
     implementation 'com.makeramen:roundedimageview:2.2.1'                             // 圆形头像
-    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-5'   // 上拉刷新下拉加载
+//    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-5'   // 上拉刷新下拉加载
     implementation 'org.litepal.android:core:2.0.0'
     implementation 'com.android.support:design:26.+'
     implementation 'com.android.support:support-v4:26.+'

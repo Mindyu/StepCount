@@ -8,11 +8,20 @@
     android:background="@color/grey"
     tools:context=".activity.LoginActivity">
 
+    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/login_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:visibility="invisible"/>
+
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -56,8 +65,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="@dimen/activity_horizontal_margin">
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:orientation="horizontal">
+
                 <CheckBox
                     android:id="@+id/cbRememberPass"
                     android:layout_width="wrap_content"
@@ -70,8 +80,8 @@
                     android:id="@+id/autologin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
                     android:text="自动登录" />
             </RelativeLayout>
 
@@ -86,14 +96,5 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:visibility="gone" />
 
 </LinearLayout>

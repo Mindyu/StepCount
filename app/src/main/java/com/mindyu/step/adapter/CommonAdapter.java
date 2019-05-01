@@ -23,6 +23,14 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
         this.layoutId = layoutId;
     }
 
+    public void setDatas(List<T> datas) {
+        this.datas = datas;
+    }
+
+    public List<T> getDatas() {
+        return datas;
+    }
+
     @Override
     public int getCount() {
         return datas == null ? 0 : datas.size();
