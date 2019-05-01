@@ -45,7 +45,9 @@ public class StepDetector implements SensorEventListener {
     float ThreadValue = (float) 2.0;
     //波峰波谷时间差
     int TimeInterval = 250;
+
     private StepCountListener mStepListeners;
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -82,7 +84,9 @@ public class StepDetector implements SensorEventListener {
                 if (timeOfNow - timeOfLastPeak >= TimeInterval
                         && (peakOfWave - valleyOfWave >= ThreadValue)) {
                     timeOfThisPeak = timeOfNow;
+
                     /*
+                     * 走路或者跑步的识别
                      * 更新界面的处理，不涉及到算法
                      * 一般在通知更新界面之前，增加下面处理，为了处理无效运动：
                      * 1.连续记录10才开始计步
