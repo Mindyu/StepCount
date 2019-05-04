@@ -299,7 +299,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String jsonStr=gson.toJson(user);
             RequestBody body = RequestBody.create(JSON, jsonStr);
             Request request = new Request.Builder()
-                    .url("http://188.131.213.13:9000/user/login")
+                    .url(SystemParameter.ip + "/user/login")
                     .post(body)
                     .build();
             try {

@@ -1,6 +1,7 @@
 package com.mindyu.step.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ContentUris;
@@ -30,10 +31,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.mindyu.step.R;
@@ -45,7 +49,12 @@ import com.mindyu.step.user.bean.User;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.SimpleTimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -71,6 +80,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private EditText weight_tv;
     private EditText address_tv;
     private EditText intro_tv;
+    private RadioGroup sexRadio;
+    private RadioButton male_btn;
+    private RadioButton female_btn;
+    private String sexString="";
 
     private LinearLayout avator_layout;
     private RoundedImageView show_photo;
@@ -94,6 +107,19 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 showPhotoDialog(view);
             }
         });
+        sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (group.getCheckedRadioButtonId()){
+                    case R.id.male:
+                        sexString = "男";
+                        break;
+                    case R.id.female:
+                        sexString = "女";
+                        break;
+                }
+            }
+        });
     }
 
     private void initView(){
@@ -105,24 +131,26 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         weight_tv = findViewById(R.id.weight_tv);
         address_tv = findViewById(R.id.address_tv);
         intro_tv = findViewById(R.id.intro_tv);
+        sexRadio = findViewById(R.id.rg);
+        male_btn = findViewById(R.id.male);
+        female_btn = findViewById(R.id.female);
     }
 
     private void initData() {
         Integer userId = SystemParameter.user.getId();
         name_tv.setText(SystemParameter.user.getUserName());
-
         refreshView();
-
         if (SystemParameter.info==null) new UserInfoTask().execute(userId);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class UserInfoTask extends AsyncTask<Integer, Void, Info> {
 
         @Override
         protected Info doInBackground(Integer... integers) {
             OkHttpClient okHttpClient = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("http://188.131.213.13:9000/info/" + integers[0])
+                    .url(SystemParameter.ip + "/info/" + integers[0])
                     .build();
             Log.d(TAG, "request url: "+ request);
             Call call = okHttpClient.newCall(request);
@@ -163,6 +191,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         weight_tv.setText(String.valueOf(SystemParameter.info.getWeight()));
         address_tv.setText(SystemParameter.info.getAddress());
         intro_tv.setText(SystemParameter.info.getIntro());
+        sexRadio.clearCheck();
+        if ("男".equals(SystemParameter.info.getSex()))
+            male_btn.setChecked(true);
+        else
+            female_btn.setChecked(true);
     }
 
     public void showPhotoDialog(View view) {
@@ -222,6 +255,26 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         switch (item.getItemId()) {
             case R.id.save_btn:     // 监听菜单按钮
                 // 保存用户详细信息
+                if (!"".equals(sexString)) {
+                    SystemParameter.info.setSex(sexString);
+                }
+                SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString()));
+                SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString()));
+                String dateStr = birth_tv.getText().toString();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date date = sdf.parse(dateStr);
+                    SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
+                    Log.d(TAG, SystemParameter.info.getBirthday().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SystemParameter.info.setAddress(address_tv.getText().toString());
+                SystemParameter.info.setIntro(intro_tv.getText().toString());
+
+                Log.d(TAG, SystemParameter.info.toString());
+                new UserInfoSaveTask().execute(SystemParameter.info);
+
                 UserInfoActivity.this.finish();
                 break;
         }
@@ -365,10 +418,62 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             show_photo.setImageBitmap(bitmap);
         } else {
-            Toast.makeText(this, "failed to	get	image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "failed to get image", Toast.LENGTH_SHORT).show();
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    public class UserInfoSaveTask extends AsyncTask<Info, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Info... infos) {
+            OkHttpClient okHttpClient = new OkHttpClient();
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            Gson gson=new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd")
+                    .create();
+            //将对象转换为诶JSON格式字符串
+            String jsonStr=gson.toJson(infos[0]);
+            RequestBody body = RequestBody.create(JSON, jsonStr);
+
+            Request request = new Request.Builder()
+                    .url(SystemParameter.ip + "/info/")
+                    .post(body)
+                    .build();
+            Log.d(TAG, "request url: "+ request);
+            Call call = okHttpClient.newCall(request);
+            try {
+                Response response = call.execute();
+                if (response.body()==null) {
+                    Log.d(TAG, "onResponse: 保存用户信息失败");
+                    return null;
+                }
+                String data = response.body().string();
+                Log.d(TAG, "onResponse: "+data);
+
+                Result result = gson.fromJson(data, new TypeToken<Result>() {
+                }.getType());
+                if (result.getCode() == 200){
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result){
+                Log.d(TAG, "onPostExecute: 保存成功");
+                Toast.makeText(UserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(UserInfoActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 
 

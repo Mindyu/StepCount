@@ -117,7 +117,7 @@
                 android:textSize="18sp"
                 android:text="男" />
             <RadioButton
-                android:id="@+id/femle"
+                android:id="@+id/female"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"

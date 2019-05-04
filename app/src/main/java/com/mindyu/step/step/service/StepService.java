@@ -1,5 +1,6 @@
 package com.mindyu.step.step.service;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,16 +13,23 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.step.bean.StepCountData;
+import com.mindyu.step.user.bean.Result;
 import com.orhanobut.logger.Logger;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +41,13 @@ import com.mindyu.step.step.accelerometer.StepCount;
 import com.mindyu.step.step.accelerometer.StepValuePassListener;
 
 import org.litepal.LitePal;
+
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class StepService extends Service implements SensorEventListener {
     private String TAG = "StepService";
@@ -200,23 +215,43 @@ public class StepService extends Service implements SensorEventListener {
                 } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
                     Log.i(TAG, " receive Intent.ACTION_CLOSE_SYSTEM_DIALOGS");
                     //保存一次
-                    save();
+                    if (SystemParameter.use_local_storage){
+                        saveToSqlite();
+                    }else {
+                        saveToMysql();
+                    }
                 } else if (Intent.ACTION_SHUTDOWN.equals(intent.getAction())) {
                     Log.i(TAG, " receive ACTION_SHUTDOWN");
-                    save();
+                    if (SystemParameter.use_local_storage){
+                        saveToSqlite();
+                    }else {
+                        saveToMysql();
+                    }
                 } else if (Intent.ACTION_DATE_CHANGED.equals(action)) {//日期变化步数重置为0
 //                    Logger.d("重置步数" + StepDcretor.CURRENT_STEP);
-                    save();
+                    if (SystemParameter.use_local_storage){
+                        saveToSqlite();
+                    }else {
+                        saveToMysql();
+                    }
                     isNewDay();
                 } else if (Intent.ACTION_TIME_CHANGED.equals(action)) {
                     //时间变化步数重置为0
                     isCall();
-                    save();
+                    if (SystemParameter.use_local_storage){
+                        saveToSqlite();
+                    }else {
+                        saveToMysql();
+                    }
                     isNewDay();
                 } else if (Intent.ACTION_TIME_TICK.equals(action)) {//日期变化步数重置为0
                     isCall();
 //                    Logger.d("重置步数" + StepDcretor.CURRENT_STEP);
-                    save();
+                    if (SystemParameter.use_local_storage){
+                        saveToSqlite();
+                    }else {
+                        saveToMysql();
+                    }
                     isNewDay();
                 }
             }
@@ -515,7 +550,7 @@ public class StepService extends Service implements SensorEventListener {
         public void onFinish() {
             // 如果计时器正常结束，则开始计步
             time.cancel();
-            save();
+            saveToSqlite();
             startTimeCount();
         }
 
@@ -529,7 +564,7 @@ public class StepService extends Service implements SensorEventListener {
     /**
      * 保存记步数据
      */
-    private void save() {
+    private void saveToSqlite() {
         int tempStep = CURRENT_STEP;
 
         List<StepCountData> list = LitePal.where("today = ?", CURRENT_DATE).
@@ -546,6 +581,13 @@ public class StepService extends Service implements SensorEventListener {
         }
     }
 
+    /**
+     * 保存记步数据
+     */
+    private void saveToMysql() {
+        if (SystemParameter.user!=null)
+            new UserStepCountTask().execute(CURRENT_STEP);
+    }
 
     @Override
     public void onDestroy() {
@@ -559,5 +601,56 @@ public class StepService extends Service implements SensorEventListener {
     @Override
     public boolean onUnbind(Intent intent) {
         return super.onUnbind(intent);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class UserStepCountTask extends AsyncTask<Integer, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Integer... step) {
+            OkHttpClient okHttpClient = new OkHttpClient();
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            com.mindyu.step.user.bean.StepCount count = new com.mindyu.step.user.bean.StepCount();
+            count.setUserId(SystemParameter.user.getId());
+            count.setStepCount(step[0]);
+            Gson gson=new Gson();
+            //将对象转换为诶JSON格式字符串
+            String jsonStr=gson.toJson(count);
+            RequestBody body = RequestBody.create(JSON, jsonStr);
+
+            Request request = new Request.Builder()
+                    .url(SystemParameter.ip + "/count/")
+                    .post(body)
+                    .build();
+            Log.d(TAG, "request url: "+ request);
+            Call call = okHttpClient.newCall(request);
+            try {
+                Response response = call.execute();
+                if (response.body()==null) {
+                    Log.d(TAG, "onResponse: 用户步数信息失败");
+                    return null;
+                }
+                String data = response.body().string();
+                Log.d(TAG, "onResponse: "+data);
+
+                Result result = gson.fromJson(data, new TypeToken<Result>() {
+                }.getType());
+                if (result.getCode() == 200){
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (!result){
+                Toast.makeText(getApplicationContext(), "保存数据失败", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

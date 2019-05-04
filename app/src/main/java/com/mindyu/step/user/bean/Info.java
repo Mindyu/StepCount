@@ -6,6 +6,7 @@ import java.util.Date;
 public class Info implements Serializable {
     private Integer id;//
     private Integer userId;//
+    private String sex;
     private Double height;//
     private Integer stepPlan;//
     private Double weight;//
@@ -122,11 +123,20 @@ public class Info implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
     @Override
     public String toString() {
         return "Info{" +
                 "id=" + id +
                 ", userId=" + userId +
+                ", sex=" + sex +
                 ", height=" + height +
                 ", stepPlan=" + stepPlan +
                 ", weight=" + weight +
