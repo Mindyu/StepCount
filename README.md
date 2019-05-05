@@ -23,8 +23,8 @@
 
 todo
 - [x] 历史数据下拉刷新
-- [ ] 所有用户数据存储服务器
-- [ ] 头像上传存储
+- [x] 所有用户数据存储服务器
+- [x] 头像上传存储
 - [ ] 运动图片轮显
 - [ ] 健康资讯模块（API）
 - [ ] GPS轨迹绘制
@@ -50,3 +50,26 @@ todo
 
 - Spring Boot微服务架构 整合 Spring Data JPA
 - MySQL 数据库
+
+
+
+遇到过的问题
+
+1. Android 用户详细信息Info存储时，因生日为 java.util.date 类型，Android 端使用 Gson 对结构信息序列化，后端采用 Jackson 解析。导致日期解析失败。
+2. 头像图片的上传和显示优化
+
+
+
+
+
+解决方法
+
+1. 构建 Gson 对象时，设置日期格式化的样式即可
+
+```
+Gson gson=new GsonBuilder()
+        .setDateFormat("yyyy-MM-dd")
+        .create();
+```
+
+2. 减少服务器的请求次数和图片压缩两种方案

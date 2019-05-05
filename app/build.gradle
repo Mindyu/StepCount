@@ -37,5 +37,5 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:2.0.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.google.code.gson:gson:2.8.2'
-
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5' // image-loader
 }

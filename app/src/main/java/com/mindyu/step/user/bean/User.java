@@ -9,8 +9,6 @@ public class User extends LitePalSupport implements Serializable{
     private Integer id;
     private String userName;
     private String password;
-    private String avator;
-    private String email;
 
     public Integer getId() {
         return id;
@@ -36,21 +34,6 @@ public class User extends LitePalSupport implements Serializable{
         this.userName = userName;
     }
 
-    public String getAvator() {
-        return avator;
-    }
-
-    public void setAvator(String avator) {
-        this.avator = avator;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     @Override
     public String toString() {
@@ -58,8 +41,6 @@ public class User extends LitePalSupport implements Serializable{
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", avator='" + avator + '\'' +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

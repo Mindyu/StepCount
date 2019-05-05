@@ -6,6 +6,8 @@ import java.util.Date;
 public class Info implements Serializable {
     private Integer id;//
     private Integer userId;//
+    private String avator;
+    private String email;
     private String sex;
     private Double height;//
     private Integer stepPlan;//
@@ -33,6 +35,22 @@ public class Info implements Serializable {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getAvator() {
+        return avator;
+    }
+
+    public void setAvator(String avator) {
+        this.avator = avator;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Double getHeight() {
@@ -136,7 +154,9 @@ public class Info implements Serializable {
         return "Info{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", sex=" + sex +
+                ", avator='" + avator + '\'' +
+                ", email='" + email + '\'' +
+                ", sex='" + sex + '\'' +
                 ", height=" + height +
                 ", stepPlan=" + stepPlan +
                 ", weight=" + weight +
@@ -145,6 +165,9 @@ public class Info implements Serializable {
                 ", address='" + address + '\'' +
                 ", extra='" + extra + '\'' +
                 ", intro='" + intro + '\'' +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

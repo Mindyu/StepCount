@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -45,6 +46,10 @@ import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Info;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,6 +64,7 @@ import java.util.SimpleTimeZone;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -75,6 +81,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private Dialog dialog;
 
     private EditText name_tv;
+    private EditText email_tv;
     private EditText birth_tv;
     private EditText height_tv;
     private EditText weight_tv;
@@ -86,9 +93,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private String sexString="";
 
     private LinearLayout avator_layout;
-    private RoundedImageView show_photo;
+    private RoundedImageView avator_iv;
     private Uri imageUri;
+    private ImageLoader imageLoader;
 
+    private static ProgressDialog pb;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
 
@@ -97,6 +106,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_user_info);
+
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getBaseContext()));
 
         initView();
         initData();
@@ -123,9 +135,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initView(){
-        show_photo = findViewById(R.id.avator_iv);
+        avator_iv = findViewById(R.id.avator_iv);
         avator_layout = findViewById(R.id.avator_layout);
         name_tv = findViewById(R.id.name_tv);
+        email_tv = findViewById(R.id.email_tv);
         birth_tv = findViewById(R.id.birth_tv);
         height_tv = findViewById(R.id.height_tv);
         weight_tv = findViewById(R.id.weight_tv);
@@ -179,6 +192,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         @Override
         protected void onPostExecute(Info info) {
             SystemParameter.info = info;
+            if (info!=null) loadImage(info.getAvator());
             refreshView();
         }
     }
@@ -187,6 +201,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (SystemParameter.info==null) return;
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//显示2017-10-27格式
         birth_tv.setText(sdf.format(SystemParameter.info.getBirthday()));
+        email_tv.setText(SystemParameter.info.getEmail());
         height_tv.setText(String.valueOf(SystemParameter.info.getHeight()));
         weight_tv.setText(String.valueOf(SystemParameter.info.getWeight()));
         address_tv.setText(SystemParameter.info.getAddress());
@@ -198,14 +213,21 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             female_btn.setChecked(true);
     }
 
+    private void loadImage(String avator){
+        if (avator==null || "".equals(avator)) return;
+        String imageUrl = SystemParameter.ip+"/img/download?filename="+avator;
+        ImageSize targetSize = new ImageSize(100, 100);
+        imageLoader.displayImage(imageUrl, avator_iv, targetSize);
+    }
+
     public void showPhotoDialog(View view) {
         dialog = new Dialog(this, R.style.BottomDialogTheme);
         //填充对话框的布局
         inflate = LayoutInflater.from(this).inflate(R.layout.choose_user_avatar, null);
         //初始化控件
-        takePhoto = (TextView) inflate.findViewById(R.id.camera);
-        chooseFromAlbum = (TextView) inflate.findViewById(R.id.pic);
-        cancel = (TextView) inflate.findViewById(R.id.cancel);
+        takePhoto = inflate.findViewById(R.id.camera);
+        chooseFromAlbum = inflate.findViewById(R.id.pic);
+        cancel = inflate.findViewById(R.id.cancel);
         //设置监听
         takePhoto.setOnClickListener(this);
         chooseFromAlbum.setOnClickListener(this);
@@ -269,6 +291,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                SystemParameter.info.setEmail(email_tv.getText().toString());
                 SystemParameter.info.setAddress(address_tv.getText().toString());
                 SystemParameter.info.setIntro(intro_tv.getText().toString());
 
@@ -296,7 +319,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (Build.VERSION.SDK_INT >= 24) {
             imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
         } else {
-
             imageUri = Uri.fromFile(outputImage);
         }
         // 启动相机程序
@@ -313,7 +335,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     try {
                         //	将拍摄的照片显示出来
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        show_photo.setImageBitmap(bitmap);
+                        avator_iv.setImageBitmap(bitmap);
+                        upload(imageUri.getPath()); // 图片上传
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -335,7 +358,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 break;
         }
     }
-
 
     //从相册中选择照片
     public void chooseFromAlbum() {
@@ -416,7 +438,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            show_photo.setImageBitmap(bitmap);
+            avator_iv.setImageBitmap(bitmap);
+            upload(imagePath);      // 图片上传
         } else {
             Toast.makeText(this, "failed to get image", Toast.LENGTH_SHORT).show();
         }
@@ -472,6 +495,70 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 return;
             }
             Toast.makeText(UserInfoActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void upload(String picturePath) {
+        pb = new ProgressDialog(this);
+
+        pb.setMessage("正在上传");
+        pb.setCancelable(false);
+        pb.show();
+
+        new PictureUploadTask().execute(picturePath);
+    }
+
+    public class PictureUploadTask extends AsyncTask<String, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(String... localPath) {
+            MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+            OkHttpClient client = new OkHttpClient();
+
+            MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+
+            File f = new File(localPath[0]);
+            // f.getName() 使用用户名作为文件名，后端会增加时间戳
+            String suffix = f.getName().substring(f.getName().lastIndexOf("."));
+            builder.addFormDataPart("file", SystemParameter.user.getUserName()+suffix, RequestBody.create(MEDIA_TYPE_PNG, f));
+
+            final MultipartBody requestBody = builder.build();
+            //构建请求
+            final Request request = new Request.Builder()
+                    .url(SystemParameter.ip + "/img/upload")//地址
+                    .post(requestBody)//添加请求体
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.body()==null) {
+                    Log.d(TAG, "onResponse: 头像上传失败");
+                    return null;
+                }
+                String data = response.body().string();
+                Log.d(TAG, "onResponse: "+data);
+
+                Gson gson = new Gson();
+                Result result = gson.fromJson(data, new TypeToken<Result>() {
+                }.getType());
+                if (result != null && result.getCode() == 200){
+                    SystemParameter.info.setAvator(result.getData().toString());
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (pb != null)
+                pb.dismiss();
+            if (result){
+                Toast.makeText(UserInfoActivity.this, "头像上传成功", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(UserInfoActivity.this, "头像上传失败", Toast.LENGTH_SHORT).show();
         }
     }
 }
