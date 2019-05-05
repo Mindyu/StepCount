@@ -11,10 +11,13 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -53,7 +56,9 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -100,6 +105,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private static ProgressDialog pb;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
+    public static final int REQUEST_CODE_CUTTING = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,26 +118,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         initView();
         initData();
-
-        avator_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPhotoDialog(view);
-            }
-        });
-        sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (group.getCheckedRadioButtonId()){
-                    case R.id.male:
-                        sexString = "男";
-                        break;
-                    case R.id.female:
-                        sexString = "女";
-                        break;
-                }
-            }
-        });
+        initEvent();
     }
 
     private void initView(){
@@ -154,6 +141,28 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         name_tv.setText(SystemParameter.user.getUserName());
         refreshView();
         if (SystemParameter.info==null) new UserInfoTask().execute(userId);
+    }
+
+    private void initEvent(){
+        avator_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPhotoDialog(view);
+            }
+        });
+        sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (group.getCheckedRadioButtonId()){
+                    case R.id.male:
+                        sexString = "男";
+                        break;
+                    case R.id.female:
+                        sexString = "女";
+                        break;
+                }
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -197,6 +206,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    /**
+     * 刷新文本域
+     */
     private void refreshView(){
         if (SystemParameter.info==null) return;
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//显示2017-10-27格式
@@ -213,13 +225,21 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             female_btn.setChecked(true);
     }
 
+    /**
+     * 异步加载头像
+     * @param avator
+     */
     private void loadImage(String avator){
         if (avator==null || "".equals(avator)) return;
         String imageUrl = SystemParameter.ip+"/img/download?filename="+avator;
-        ImageSize targetSize = new ImageSize(100, 100);
+        ImageSize targetSize = new ImageSize(300, 300);
         imageLoader.displayImage(imageUrl, avator_iv, targetSize);
     }
 
+    /**
+     * 图片选择弹框
+     * @param view
+     */
     public void showPhotoDialog(View view) {
         dialog = new Dialog(this, R.style.BottomDialogTheme);
         //填充对话框的布局
@@ -287,7 +307,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 try {
                     Date date = sdf.parse(dateStr);
                     SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
-                    Log.d(TAG, SystemParameter.info.getBirthday().toString());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -295,7 +314,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 SystemParameter.info.setAddress(address_tv.getText().toString());
                 SystemParameter.info.setIntro(intro_tv.getText().toString());
 
-                Log.d(TAG, SystemParameter.info.toString());
+                Log.d(TAG, "onOptionsItemSelected: "+SystemParameter.info.toString());
                 new UserInfoSaveTask().execute(SystemParameter.info);
 
                 UserInfoActivity.this.finish();
@@ -306,8 +325,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     //调用摄像头拍照
     public void takePhoto() {
+        // 启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         //创建File对象，用于存储拍照后的图片
-        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        File outputImage = new File(getExternalCacheDir(), "output_image.png");
         try {
             if (outputImage.exists()) {
                 outputImage.delete();
@@ -318,11 +339,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
         if (Build.VERSION.SDK_INT >= 24) {
             imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }
-        // 启动相机程序
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }
@@ -332,34 +353,87 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         switch (requestCode) {
             case TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    try {
+                    /*try {
                         //	将拍摄的照片显示出来
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         avator_iv.setImageBitmap(bitmap);
                         upload(imageUri.getPath()); // 图片上传
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                    }
+                    }*/
+                    File temp = new File(getExternalCacheDir() + File.separator + "output_image.png");
+                    startPhotoZoom(Uri.fromFile(temp));
                 }
                 break;
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    //判断手机系统版本号
+                    /*//判断手机系统版本号
                     if (Build.VERSION.SDK_INT >= 19) {
                         //4.4及以上系统使用这个方法处理图片
                         handleImageOnKitKat(data);
                     } else {
                         //4.4以下系统使用这个方法处理图片
                         handleImageBeforeKitKat(data);
-                    }
+                    }*/
+                    startPhotoZoom(data.getData());
                 }
+                break;
+            case REQUEST_CODE_CUTTING:
+                if (data!=null)
+                    setPicToView(data);
                 break;
             default:
                 break;
         }
     }
 
-    //从相册中选择照片
+    /**
+     * 裁剪图片方法实现
+     * @param uri
+     */
+    public void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setDataAndType(uri, "image/*");
+        // crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+        intent.putExtra("return-data", true);
+        Log.d(TAG, "startPhotoZoom: 图片压缩");
+        startActivityForResult(intent, REQUEST_CODE_CUTTING);
+    }
+
+    /**
+     * 保存裁剪之后的图片数据
+     * @param picdata
+     */
+    private void setPicToView(Intent picdata) {
+        Bundle extras = picdata.getExtras();
+        if (extras != null) {
+            // 取得SDCard图片路径做显示
+            Bitmap photo = extras.getParcelable("data");
+            Drawable drawable = new BitmapDrawable(null, photo);
+
+            String path = getExternalCacheDir() + File.separator + "avator.png";
+            avator_iv.setImageDrawable(drawable);
+            try{
+                OutputStream os = new FileOutputStream(path);
+                photo.compress(Bitmap.CompressFormat.PNG, 100, os);
+                os.flush();
+                os.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            upload(path);
+        }
+    }
+
+    // 从相册中选择照片
     public void chooseFromAlbum() {
         if (ContextCompat.checkSelfPermission(UserInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(UserInfoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -498,6 +572,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    /**
+     * 图片上传 显示进度条
+     * @param picturePath
+     */
     private void upload(String picturePath) {
         pb = new ProgressDialog(this);
 
@@ -508,6 +586,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         new PictureUploadTask().execute(picturePath);
     }
 
+    /**
+     * 图片上传异步任务
+     */
     public class PictureUploadTask extends AsyncTask<String, Void, Boolean>{
 
         @Override
