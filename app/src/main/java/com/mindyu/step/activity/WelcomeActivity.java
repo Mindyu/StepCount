@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.mindyu.step.R;
 import com.mindyu.step.adapter.SplashAdapter;
@@ -15,7 +15,7 @@ import com.mindyu.step.view.scroll.ScollLinearLayoutManager;
 public class WelcomeActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private TextView login_tv;
+    private Button go_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +23,10 @@ public class WelcomeActivity extends AppCompatActivity {
 
         //全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_welcome2);
+        setContentView(R.layout.activity_welcome);
 
-        login_tv = findViewById(R.id.login_tv);
-        login_tv.setOnClickListener(new View.OnClickListener() {
+        go_btn = findViewById(R.id.go_btn);
+        go_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
