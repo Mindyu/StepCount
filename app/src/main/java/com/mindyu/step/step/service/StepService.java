@@ -130,7 +130,7 @@ public class StepService extends Service implements SensorEventListener {
      * @return
      */
     private String getTodayDate() {
-        Date date = new Date(System.currentTimeMillis());
+        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }

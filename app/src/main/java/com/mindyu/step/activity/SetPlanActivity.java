@@ -14,6 +14,7 @@ import android.widget.TimePicker;
 
 import com.mindyu.step.R;
 import com.mindyu.step.step.utils.SharedPreferencesUtils;
+import com.mindyu.step.util.DateTimePickerUtil;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,9 +28,6 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
 
     private SharedPreferencesUtils sp;
 
-    private LinearLayout layout_titlebar;
-    private ImageView iv_left;
-    private ImageView iv_right;
     private EditText tv_step_number;
     private CheckBox cb_remind;
     private TextView tv_remind_time;
@@ -39,9 +37,6 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
     private String achieveTime;
 
     private void assignViews() {
-        layout_titlebar = (LinearLayout) findViewById(R.id.layout_titlebar);
-        iv_left = (ImageView) findViewById(R.id.iv_left);
-        iv_right = (ImageView) findViewById(R.id.iv_right);
         tv_step_number = (EditText) findViewById(R.id.tv_step_number);
         cb_remind = (CheckBox) findViewById(R.id.cb_remind);
         tv_remind_time = (TextView) findViewById(R.id.tv_remind_time);
@@ -85,8 +80,6 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
 
 
     public void addListener() {
-        iv_left.setOnClickListener(this);
-        iv_right.setOnClickListener(this);
         btn_save.setOnClickListener(this);
         tv_remind_time.setOnClickListener(this);
     }
@@ -94,15 +87,11 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_left:
-                finish();
-                break;
             case R.id.btn_save:
                 save();
                 break;
-
             case R.id.tv_remind_time:
-                showTimeDialog1();
+                DateTimePickerUtil.showTimeDialog(this, tv_remind_time);
                 break;
         }
     }
@@ -129,35 +118,8 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             sp.setParam("achieveTime", achieveTime);
         }
-                finish();
+        finish();
     }
 
-    private void showTimeDialog1() {
-        final Calendar calendar = Calendar.getInstance(Locale.CHINA);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-//        String time = tv_remind_time.getText().toString().trim();
-        final DateFormat df = new SimpleDateFormat("HH:mm");
-
-        new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                String remaintime = calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
-                Date date = null;
-                try {
-                    date = df.parse(remaintime);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                if (null != date) {
-                    calendar.setTime(date);
-                }
-                tv_remind_time.setText(df.format(date));
-            }
-        }, hour, minute, true).show();
-    }
 }
 

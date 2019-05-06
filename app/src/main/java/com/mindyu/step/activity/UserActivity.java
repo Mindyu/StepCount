@@ -33,7 +33,7 @@ public class UserActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sp = getSharedPreferences("userInfo", 0);
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("directlogin", false);
+                editor.putBoolean("direct_login", false);
                 editor.commit();
 
                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);

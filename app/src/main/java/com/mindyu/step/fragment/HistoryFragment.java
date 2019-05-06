@@ -34,7 +34,10 @@ import org.litepal.LitePal;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -68,9 +71,9 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         initViews(view);
-        if (SystemParameter.use_local_storage){
+        if (SystemParameter.use_local_storage) {
             initDataFromSqllite();
-        }else {
+        } else {
             initDataFromMysql();
         }
         return view;
@@ -102,7 +105,7 @@ public class HistoryFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         List<StepCountData> stepCountDataList = commonAdapter.getDatas();
-                        stepCountDataList.get(0).setStep(""+StepService.CURRENT_STEP);
+                        stepCountDataList.get(0).setStep("" + StepService.CURRENT_STEP);
                         commonAdapter.notifyDataSetChanged();
                         refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
                     }
@@ -113,7 +116,7 @@ public class HistoryFragment extends Fragment {
 
     private void initDataFromMysql() {
         setEmptyView(history_lv);
-        if (SystemParameter.user!=null)
+        if (SystemParameter.user != null)
             new UserStepCountTask().execute(SystemParameter.user.getId());
 
         commonAdapter = new CommonAdapter<StepCount>(this.getContext(), new ArrayList<StepCount>(), R.layout.item) {
@@ -135,11 +138,22 @@ public class HistoryFragment extends Fragment {
         refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //设置2秒的时间来执行以下事件
+                //设置1秒的时间来执行以下事件
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
                         List<StepCount> stepCountList = commonAdapter.getDatas();
-                        stepCountList.get(0).setStepCount(StepService.CURRENT_STEP);
+                        if (stepCountList != null && stepCountList.size() > 0 &&
+                                sdf.format(stepCountList.get(0).getDate()).equals(StepService.CURRENT_DATE)) {
+                            stepCountList.get(0).setStepCount(StepService.CURRENT_STEP);
+                        } else {
+                            StepCount stepCount = new StepCount();
+                            stepCount.setDate(new Date());
+                            stepCount.setStepCount(StepService.CURRENT_STEP);
+                            if (stepCountList == null) stepCountList = new ArrayList<>();
+                            stepCountList.add(stepCount);
+                            commonAdapter.setDatas(stepCountList);
+                        }
                         commonAdapter.notifyDataSetChanged();
                         refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
                     }
@@ -170,24 +184,24 @@ public class HistoryFragment extends Fragment {
             OkHttpClient okHttpClient = new OkHttpClient();
 
             Request request = new Request.Builder()
-                    .url(SystemParameter.ip + "/count/"+userId[0])
+                    .url(SystemParameter.ip + "/count/" + userId[0])
                     .build();
-            Log.d(TAG, "request url: "+ request);
+            Log.d(TAG, "request url: " + request);
             Call call = okHttpClient.newCall(request);
             try {
                 Response response = call.execute();
-                if (response.body()==null) {
+                if (response.body() == null) {
                     Log.d(TAG, "onResponse: 获取用户步数信息失败");
                     return null;
                 }
                 String data = response.body().string();
-                Log.d(TAG, "onResponse: "+data);
+                Log.d(TAG, "onResponse: " + data);
 
                 Gson gson = new Gson();
                 List<StepCount> result = gson.fromJson(data, new TypeToken<List<StepCount>>() {
                 }.getType());
 
-                if (result!= null){
+                if (result != null) {
                     return result;
                 }
             } catch (IOException e) {
@@ -198,7 +212,7 @@ public class HistoryFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<StepCount> result) {
-            if (result==null)
+            if (result == null)
                 Toast.makeText(getContext(), "获取步数数据失败", Toast.LENGTH_SHORT).show();
             commonAdapter.setDatas(result);
             commonAdapter.notifyDataSetChanged();

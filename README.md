@@ -18,6 +18,7 @@
 - 用户注册登陆
 - 用户信息显示
 - 步数历史信息
+- 自动登录记住密码
 
 
 
@@ -25,7 +26,8 @@ todo
 - [x] 历史数据下拉刷新
 - [x] 所有用户数据存储服务器
 - [x] 头像上传存储
-- [ ] 运动图片轮显
+- [x] 运动图片轮显
+- [x] 引导页、欢迎页面动画显示 <https://blog.csdn.net/h176nhx7/article/details/81571957?tdsourcetag=s_pctim_aiomsg> 
 - [ ] 健康资讯模块（API）
 - [ ] GPS轨迹绘制
 - [ ] 周、月维度运动报告
@@ -41,8 +43,13 @@ todo
 - SharePerference
 - 安卓网络编程
 - 异步请求 AsyncTask
+- RxJava 
 - 头像图片选择
 - Material Design 设计规范
+- RecyclerView 
+- DateTimePicker 封装
+- 自定义 FitImageView ，自适应宽度
+- StepArcView 步数圆弧显示
 
 
 

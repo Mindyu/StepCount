@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -46,6 +47,7 @@ import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Info;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
+import com.mindyu.step.util.DateTimePickerUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -112,26 +114,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         initView();
         initData();
-
-        avator_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPhotoDialog(view);
-            }
-        });
-        sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (group.getCheckedRadioButtonId()){
-                    case R.id.male:
-                        sexString = "男";
-                        break;
-                    case R.id.female:
-                        sexString = "女";
-                        break;
-                }
-            }
-        });
+        initEvent();
     }
 
     private void initView(){
@@ -154,6 +137,36 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         name_tv.setText(SystemParameter.user.getUserName());
         refreshView();
         if (SystemParameter.info==null) new UserInfoTask().execute(userId);
+    }
+
+    private void initEvent(){
+        birth_tv.setFocusable(false);
+        birth_tv.setFocusableInTouchMode(false);
+        birth_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateTimePickerUtil.showDateDialog(UserInfoActivity.this, birth_tv, birth_tv.getText().toString().trim());
+            }
+        });
+        avator_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPhotoDialog(view);
+            }
+        });
+        sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (group.getCheckedRadioButtonId()){
+                    case R.id.male:
+                        sexString = "男";
+                        break;
+                    case R.id.female:
+                        sexString = "女";
+                        break;
+                }
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -280,22 +293,21 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 if (!"".equals(sexString)) {
                     SystemParameter.info.setSex(sexString);
                 }
-                SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString()));
-                SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString()));
+                SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString().trim()));
+                SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString().trim()));
                 String dateStr = birth_tv.getText().toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 try {
                     Date date = sdf.parse(dateStr);
                     SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
-                    Log.d(TAG, SystemParameter.info.getBirthday().toString());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                SystemParameter.info.setEmail(email_tv.getText().toString());
-                SystemParameter.info.setAddress(address_tv.getText().toString());
-                SystemParameter.info.setIntro(intro_tv.getText().toString());
+                SystemParameter.info.setEmail(email_tv.getText().toString().trim());
+                SystemParameter.info.setAddress(address_tv.getText().toString().trim());
+                SystemParameter.info.setIntro(intro_tv.getText().toString().trim());
 
-                Log.d(TAG, SystemParameter.info.toString());
+                Log.d(TAG, "onOptionsItemSelected: " + SystemParameter.info.toString());
                 new UserInfoSaveTask().execute(SystemParameter.info);
 
                 UserInfoActivity.this.finish();
