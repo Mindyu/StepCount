@@ -8,6 +8,24 @@
     android:background="@color/white"
     tools:context=".activity.UserInfoActivity">
 
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="个人信息"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+        titlebar:rightType="textView"
+        titlebar:rightText="保存"
+        titlebar:rightTextColor="@color/white"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
+
     <LinearLayout
         android:id="@+id/avator_layout"
         android:layout_width="match_parent"

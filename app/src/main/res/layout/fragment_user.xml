@@ -1,9 +1,25 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:background="@color/white"
     tools:context="com.mindyu.step.fragment.UserFragment">
+
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="我的"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,11 +49,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -69,11 +85,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -105,11 +121,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -141,11 +157,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -177,11 +193,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -213,11 +229,11 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginRight="3dp"
-                android:src="@mipmap/ic_arrow" />
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_keyboard_arrow_right_black_48dp" />
 
         </LinearLayout>
 
@@ -234,4 +250,4 @@
     </LinearLayout>
 
 
-</FrameLayout>
+</LinearLayout>

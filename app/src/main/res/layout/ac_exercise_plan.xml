@@ -6,6 +6,21 @@
     android:background="@color/white"
     android:orientation="vertical">
 
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="锻炼计划"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="180dp"

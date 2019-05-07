@@ -6,6 +6,21 @@
     android:background="@color/white"
     tools:context="com.mindyu.step.fragment.StepFragment">
 
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="首页"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
+
     <com.youth.banner.Banner
         android:id="@+id/banner"
         android:layout_width="match_parent"

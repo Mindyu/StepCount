@@ -22,10 +22,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);//不显示程序的标题栏
-
         setContentView(R.layout.activity_main);
-        mBottomBar = (BottomTabBar) findViewById(R.id.bottom_bar);
+        mBottomBar =findViewById(R.id.bottom_bar);
 
         mBottomBar.init(getSupportFragmentManager(), 1080, 1920)
 

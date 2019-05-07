@@ -15,6 +15,7 @@ import android.widget.TimePicker;
 import com.mindyu.step.R;
 import com.mindyu.step.step.utils.SharedPreferencesUtils;
 import com.mindyu.step.util.DateTimePickerUtil;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -24,7 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class SetPlanActivity extends AppCompatActivity implements View.OnClickListener {
+public class SetPlanActivity extends SwipeBackActivity implements View.OnClickListener {
 
     private SharedPreferencesUtils sp;
 
@@ -35,19 +36,22 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
     private String walk_qty;
     private String remind;
     private String achieveTime;
+    private CommonTitleBar topbar;
 
-    private void assignViews() {
+    private void initView() {
         tv_step_number = (EditText) findViewById(R.id.tv_step_number);
         cb_remind = (CheckBox) findViewById(R.id.cb_remind);
         tv_remind_time = (TextView) findViewById(R.id.tv_remind_time);
         btn_save = (Button) findViewById(R.id.btn_save);
+        topbar = findViewById(R.id.topbar);
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_exercise_plan);
-        assignViews();
+        initView();
         initData();
         addListener();
     }

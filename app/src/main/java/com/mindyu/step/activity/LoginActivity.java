@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -28,6 +30,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,18 +38,13 @@ import com.mindyu.step.R;
 import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
-import com.mindyu.step.user.dao.UserDao;
-
-import org.json.JSONObject;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -58,7 +56,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends SwipeBackActivity implements LoaderCallbacks<Cursor> {
 
     private UserLoginTask mAuthTask = null;
 
@@ -69,6 +67,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private CheckBox cbRememberPass;
     private CheckBox autologin;
     private SharedPreferences sp;
+    private Button signBtn;
+    private CommonTitleBar topbar;
+
+    @Override
+    protected boolean isSwipeBackEnable() {
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,38 +81,50 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         initViews();
+        initEvent();
         initText();
     }
 
     private void initViews() {
-        mUserNameView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUserNameView = findViewById(R.id.email);
         populateAutoComplete();
+        mPasswordView = findViewById(R.id.password);
+        cbRememberPass = findViewById(R.id.cbRememberPass);
+        autologin = findViewById(R.id.autologin);
+        signBtn = findViewById(R.id.email_sign_in_button);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+
+        topbar = findViewById(R.id.topbar);
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
+    }
+
+    private void initEvent(){
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.integer.action_sign_in || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    signBtn.callOnClick();
                     return true;
                 }
                 return false;
             }
         });
-
-        cbRememberPass = (CheckBox) findViewById(R.id.cbRememberPass);
-        autologin = (CheckBox) findViewById(R.id.autologin);
-
-        Button mNameSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mNameSignInButton.setOnClickListener(new OnClickListener() {
+        signBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
+            @Override
+            public void onClicked(View v, int action, String extra) {
+                if (action == CommonTitleBar.ACTION_RIGHT_BUTTON) {
+                    Toast.makeText(LoginActivity.this, "搜索", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void initText() {
@@ -129,7 +146,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (choseAutoLogin) {
                 autologin.setChecked(true);
                 if (directLogin)
-                    attemptLogin();
+                    signBtn.callOnClick();
             }
         }
     }

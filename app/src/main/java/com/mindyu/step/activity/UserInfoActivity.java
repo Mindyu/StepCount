@@ -52,6 +52,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +73,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class UserInfoActivity extends SwipeBackActivity implements View.OnClickListener {
 
     private final static String TAG = "UserInfoActivity";
 
@@ -93,6 +94,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private RadioButton male_btn;
     private RadioButton female_btn;
     private String sexString="";
+    private CommonTitleBar topbar;
 
     private LinearLayout avator_layout;
     private RoundedImageView avator_iv;
@@ -130,6 +132,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         sexRadio = findViewById(R.id.rg);
         male_btn = findViewById(R.id.male);
         female_btn = findViewById(R.id.female);
+        topbar = findViewById(R.id.topbar);
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     private void initData() {
@@ -164,6 +168,35 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     case R.id.female:
                         sexString = "女";
                         break;
+                }
+            }
+        });
+        topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
+            @Override
+            public void onClicked(View v, int action, String extra) {
+                if (action == CommonTitleBar.ACTION_RIGHT_TEXT) {
+                    // 保存用户详细信息
+                    if (!"".equals(sexString)) {
+                        SystemParameter.info.setSex(sexString);
+                    }
+                    SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString().trim()));
+                    SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString().trim()));
+                    String dateStr = birth_tv.getText().toString();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        Date date = sdf.parse(dateStr);
+                        SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    SystemParameter.info.setEmail(email_tv.getText().toString().trim());
+                    SystemParameter.info.setAddress(address_tv.getText().toString().trim());
+                    SystemParameter.info.setIntro(intro_tv.getText().toString().trim());
+
+                    Log.d(TAG, "onOptionsItemSelected: " + SystemParameter.info.toString());
+                    new UserInfoSaveTask().execute(SystemParameter.info);
+
+                    UserInfoActivity.this.finish();
                 }
             }
         });
@@ -276,44 +309,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 dialog.dismiss();
                 break;
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()) {
-            case R.id.save_btn:     // 监听菜单按钮
-                // 保存用户详细信息
-                if (!"".equals(sexString)) {
-                    SystemParameter.info.setSex(sexString);
-                }
-                SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString().trim()));
-                SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString().trim()));
-                String dateStr = birth_tv.getText().toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    Date date = sdf.parse(dateStr);
-                    SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                SystemParameter.info.setEmail(email_tv.getText().toString().trim());
-                SystemParameter.info.setAddress(address_tv.getText().toString().trim());
-                SystemParameter.info.setIntro(intro_tv.getText().toString().trim());
-
-                Log.d(TAG, "onOptionsItemSelected: " + SystemParameter.info.toString());
-                new UserInfoSaveTask().execute(SystemParameter.info);
-
-                UserInfoActivity.this.finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     //调用摄像头拍照

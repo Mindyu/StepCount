@@ -1,9 +1,27 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.mindyu.step.fragment.HotTopicFragment">
+
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="发现"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+        titlebar:rightType="imageButton"
+        titlebar:rightImageResource="@android:drawable/ic_menu_search"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -12,4 +30,4 @@
         android:text="ThreeFragment"
         android:textSize="50dp" />
 
-</FrameLayout>
+</LinearLayout>

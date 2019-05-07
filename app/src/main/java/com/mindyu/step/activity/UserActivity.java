@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.mindyu.step.R;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends SwipeBackActivity {
 
     private Button quitBtn;
     private SharedPreferences sp;
+    private CommonTitleBar topbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,8 @@ public class UserActivity extends AppCompatActivity {
 
     private void initViews(){
         quitBtn = findViewById(R.id.quit);
+        topbar = findViewById(R.id.topbar);
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     private void initEvents(){

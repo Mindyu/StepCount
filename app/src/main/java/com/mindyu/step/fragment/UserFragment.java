@@ -13,6 +13,7 @@ import com.mindyu.step.R;
 import com.mindyu.step.activity.AboutActivity;
 import com.mindyu.step.activity.UserActivity;
 import com.mindyu.step.activity.UserInfoActivity;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 
 /**
@@ -26,6 +27,7 @@ public class UserFragment extends Fragment {
     private LinearLayout soft_update;
     private LinearLayout sensor_test;
     private LinearLayout about_system;
+    private CommonTitleBar topbar;
 
     public UserFragment() {
     }
@@ -47,6 +49,9 @@ public class UserFragment extends Fragment {
         soft_update = view.findViewById(R.id.soft_update);
         sensor_test = view.findViewById(R.id.sensor_test);
         about_system = view.findViewById(R.id.about_system);
+        topbar = view.findViewById(R.id.topbar);
+        topbar.getLeftTextView().setText("我的");
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     public void initEvent() {

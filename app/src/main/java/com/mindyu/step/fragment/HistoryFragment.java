@@ -28,6 +28,7 @@ import com.mindyu.step.step.service.StepService;
 import com.mindyu.step.user.bean.Info;
 import com.mindyu.step.user.bean.StepCount;
 import com.orhanobut.logger.Logger;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import org.litepal.LitePal;
 
@@ -57,10 +58,25 @@ public class HistoryFragment extends Fragment {
     private ListView history_lv;
     private SwipeRefreshLayout refresh_layout;
     private CommonAdapter commonAdapter;
+    private CommonTitleBar topbar;
 
     private void initViews(View view) {
         history_lv = view.findViewById(R.id.lv);
         refresh_layout = view.findViewById(R.id.swiperefreshlayout);
+        topbar = view.findViewById(R.id.topbar);
+        topbar.getLeftTextView().setText("历史");
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
+    }
+
+    private void initEvent(View view){
+        topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
+            @Override
+            public void onClicked(View v, int action, String extra) {
+                if (action == CommonTitleBar.ACTION_RIGHT_BUTTON) {
+                    Toast.makeText(getContext(), "历史", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public HistoryFragment() {
@@ -71,6 +87,7 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         initViews(view);
+        initEvent(view);
         if (SystemParameter.use_local_storage) {
             initDataFromSqllite();
         } else {

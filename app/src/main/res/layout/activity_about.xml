@@ -8,6 +8,21 @@
     android:background="@color/white"
     tools:context=".activity.AboutActivity">
 
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        titlebar:centerType="none"
+        titlebar:fillStatusBar="true"
+
+        titlebar:leftType="textView"
+        titlebar:leftText="关于系统"
+        titlebar:leftTextColor="@color/white"
+        titlebar:leftTextSize="22sp"
+
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -21,6 +21,7 @@ import com.mindyu.step.step.UpdateUiCallBack;
 import com.mindyu.step.step.service.StepService;
 import com.mindyu.step.step.utils.SharedPreferencesUtils;
 import com.mindyu.step.view.StepArcView;
+import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
@@ -36,6 +37,9 @@ public class StepFragment extends Fragment implements View.OnClickListener {
     private TextView tv_isSupport;
     private SharedPreferencesUtils sp;
     private Integer[] images={R.mipmap.img_0,R.mipmap.img_1,R.mipmap.img_2,R.mipmap.img_3,R.mipmap.img_4,R.mipmap.img_5};
+
+    private CommonTitleBar topbar;
+
 
     private void initView(View view) {
         cc = view.findViewById(R.id.cc);
@@ -61,6 +65,10 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         banner.setIndicatorGravity(BannerConfig.CENTER);
         //banner设置方法全部调用完毕时最后调用
         banner.start();
+
+        topbar = view.findViewById(R.id.topbar);
+        topbar.getLeftTextView().setText("首页");
+        topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     public StepFragment() {
