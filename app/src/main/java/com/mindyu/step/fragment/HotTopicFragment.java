@@ -2,9 +2,11 @@ package com.mindyu.step.fragment;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -31,6 +33,9 @@ import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import okhttp3.Call;
@@ -49,6 +54,7 @@ public class HotTopicFragment extends Fragment {
     private SwipeRefreshLayout refresh_layout;
     private CommonAdapter commonAdapter;
     private CommonTitleBar topbar;
+    private SharedPreferences sp;
 
     public HotTopicFragment() {
     }
@@ -83,13 +89,14 @@ public class HotTopicFragment extends Fragment {
         });
     }
 
-    class News {
+    class News implements Comparable {
         String title;
         String source;
         String category;
         String ptime;
         String pic_url;
         String link;
+
 
         @Override
         public String toString() {
@@ -102,13 +109,26 @@ public class HotTopicFragment extends Fragment {
                     ", link='" + link + '\'' +
                     '}';
         }
+
+        @Override
+        public int compareTo(@NonNull Object o) {
+            return ((News) o).ptime.compareTo(ptime);
+        }
     }
 
     private void initData() {
         setEmptyView(news_lv);
+
+        List<News> result;
+        // 先从本地缓存中获取
+        sp = getActivity().getSharedPreferences("news_info", 0);
+        String data = sp.getString("newsList", "");
+        result = parseComplexJsonStr(data);
+
         // 异步获取新闻信息
         new NewsTask().execute();
-        commonAdapter = new CommonAdapter<News>(this.getContext(), new ArrayList<News>(), R.layout.item_news) {
+
+        commonAdapter = new CommonAdapter<News>(this.getContext(), result, R.layout.item_news) {
             @Override
             protected void convertView(View item, final News news) {
                 TextView title_tv = CommonViewHolder.get(item, R.id.title_tv);
@@ -178,6 +198,13 @@ public class HotTopicFragment extends Fragment {
                 String data = response.body().string();
                 Log.d(TAG, "onResponse: " + data);
 
+                String originData = sp.getString("newsList", "");
+                if (!originData.equals(data)) {
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("newsList", data);
+                    editor.apply();
+                }
+
                 List<News> result = parseComplexJsonStr(data);
                 if (result != null) {
                     return result;
@@ -190,25 +217,33 @@ public class HotTopicFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<News> result) {
-            if (result == null)
+            refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
+            if (result == null) {
                 Toast.makeText(getContext(), "获取新闻数据失败", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onPostExecute: " + result);
+                return;
+            }
+            List<News> origin = commonAdapter.getDatas();
+            if (origin != null && origin.size() == result.size() && origin.size() > 0 && origin.get(0).ptime.equals(result.get(0).ptime)) {
+                Log.d(TAG, "onPostExecute: 无新记录");
+                return;
+            }
             commonAdapter.setDatas(result);
             commonAdapter.notifyDataSetChanged();
-            refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
         }
     }
 
     private List<News> parseComplexJsonStr(String jsonStr) {
-        List<News> newsList = new ArrayList<>();
+        List<News> newsList = new ArrayList<News>();
+        if (jsonStr == null || "".equals(jsonStr))
+            return newsList;
         //最外层
         JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
         //需要遍历的数组
         jsonObject = jsonObject.getAsJsonObject("data");
         if (jsonObject == null) return newsList;
         String[] classify = {"tech", "auto", "money", "sports", "toutiao", "dy", "war", "ent"};
-        for (int i = 0; i < classify.length; i++) {
-            JsonArray jsonArray = jsonObject.getAsJsonArray(classify[i]);
+        for (String str : classify) {
+            JsonArray jsonArray = jsonObject.getAsJsonArray(str);
             if (jsonArray == null || jsonArray.size() == 0) continue;
             //循环遍历数组
             for (JsonElement info : jsonArray) {
@@ -221,6 +256,7 @@ public class HotTopicFragment extends Fragment {
                 newsList.add(news);
             }
         }
+        Collections.sort(newsList);     // 按照发布时间倒排
         return newsList;
     }
 }

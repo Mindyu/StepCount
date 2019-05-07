@@ -49,4 +49,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 提示小红点
+    public void setBottomBarSpot(int index){
+        mBottomBar.setSpot(index, true);
+    }
+
 }
