@@ -33,9 +33,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.WebViewActicity"></activity>
         <activity android:name=".activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -44,7 +46,7 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.SetPlanActivity" />
         <activity android:name=".activity.UserInfoActivity" />
-        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.LoginActivity" />
 
         <service
             android:name=".step.service.StepService"

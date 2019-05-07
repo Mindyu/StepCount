@@ -1,27 +1,57 @@
 package com.mindyu.step.fragment;
 
 
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.mindyu.step.R;
+import com.mindyu.step.activity.WebViewActicity;
+import com.mindyu.step.adapter.CommonAdapter;
+import com.mindyu.step.adapter.CommonViewHolder;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 发现页面
  */
 public class HotTopicFragment extends Fragment {
 
+    private final static String TAG = "HotTopicFragment";
+
+    private ListView news_lv;
+    private SwipeRefreshLayout refresh_layout;
+    private CommonAdapter commonAdapter;
     private CommonTitleBar topbar;
 
     public HotTopicFragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,14 +60,18 @@ public class HotTopicFragment extends Fragment {
 
         initView(view);
         initEvent(view);
+        initData();
         return view;
     }
 
     private void initView(View view) {
+        news_lv = view.findViewById(R.id.list_view);
+        refresh_layout = view.findViewById(R.id.swiperefreshlayout);
         topbar = view.findViewById(R.id.topbar);
         topbar.getLeftTextView().setText("发现");
         topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
+
     private void initEvent(View view) {
         topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
             @Override
@@ -49,4 +83,144 @@ public class HotTopicFragment extends Fragment {
         });
     }
 
+    class News {
+        String title;
+        String source;
+        String category;
+        String ptime;
+        String pic_url;
+        String link;
+
+        @Override
+        public String toString() {
+            return "News{" +
+                    "title='" + title + '\'' +
+                    ", source='" + source + '\'' +
+                    ", category='" + category + '\'' +
+                    ", ptime='" + ptime + '\'' +
+                    ", pic_url='" + pic_url + '\'' +
+                    ", link='" + link + '\'' +
+                    '}';
+        }
+    }
+
+    private void initData() {
+        setEmptyView(news_lv);
+        // 异步获取新闻信息
+        new NewsTask().execute();
+        commonAdapter = new CommonAdapter<News>(this.getContext(), new ArrayList<News>(), R.layout.item_news) {
+            @Override
+            protected void convertView(View item, final News news) {
+                TextView title_tv = CommonViewHolder.get(item, R.id.title_tv);
+                TextView source_tv = CommonViewHolder.get(item, R.id.source_tv);
+                TextView category_tv = CommonViewHolder.get(item, R.id.category_tv);
+                TextView publish_date_tv = CommonViewHolder.get(item, R.id.publish_date_tv);
+                title_tv.setText(news.title);
+                source_tv.setText(news.source);
+                category_tv.setText(news.category);
+                publish_date_tv.setText(news.ptime);
+                title_tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // 跳转新闻详情页
+                        // Toast.makeText(getContext(), news.link, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), WebViewActicity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("url", news.link);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                });
+            }
+        };
+        news_lv.setAdapter(commonAdapter);
+
+        refresh_layout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light, android.R.color.holo_orange_light);
+        // 给 swipeRefreshLayout 绑定刷新监听
+        refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new NewsTask().execute();
+            }
+        });
+    }
+
+    protected <T extends View> T setEmptyView(ListView listView) {
+        TextView emptyView = new TextView(this.getContext());
+        emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        emptyView.setText("暂无数据！");
+        emptyView.setGravity(Gravity.CENTER);
+        emptyView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        emptyView.setVisibility(View.GONE);
+        ((ViewGroup) listView.getParent()).addView(emptyView);
+        listView.setEmptyView(emptyView);
+        return (T) emptyView;
+    }
+
+    public class NewsTask extends AsyncTask<Void, Void, List<News>> {
+
+        @Override
+        protected List<News> doInBackground(Void... voids) {
+            OkHttpClient okHttpClient = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url("https://www.apiopen.top/journalismApi")
+                    .build();
+            Call call = okHttpClient.newCall(request);
+            try {
+                Response response = call.execute();
+                if (response.body() == null) {
+                    Log.d(TAG, "onResponse: 获取用户步数信息失败");
+                    return null;
+                }
+                String data = response.body().string();
+                Log.d(TAG, "onResponse: " + data);
+
+                List<News> result = parseComplexJsonStr(data);
+                if (result != null) {
+                    return result;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<News> result) {
+            if (result == null)
+                Toast.makeText(getContext(), "获取新闻数据失败", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onPostExecute: " + result);
+            commonAdapter.setDatas(result);
+            commonAdapter.notifyDataSetChanged();
+            refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
+        }
+    }
+
+    private List<News> parseComplexJsonStr(String jsonStr) {
+        List<News> newsList = new ArrayList<>();
+        //最外层
+        JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
+        //需要遍历的数组
+        jsonObject = jsonObject.getAsJsonObject("data");
+        if (jsonObject == null) return newsList;
+        String[] classify = {"tech", "auto", "money", "sports", "toutiao", "dy", "war", "ent"};
+        for (int i = 0; i < classify.length; i++) {
+            JsonArray jsonArray = jsonObject.getAsJsonArray(classify[i]);
+            if (jsonArray == null || jsonArray.size() == 0) continue;
+            //循环遍历数组
+            for (JsonElement info : jsonArray) {
+                News news = new Gson().fromJson(info, new TypeToken<News>() {
+                }.getType());
+                if (news.title == null) continue;
+                JsonArray picArray = info.getAsJsonObject().getAsJsonArray("picInfo");
+                if (picArray != null && picArray.size() > 0)
+                    news.pic_url = picArray.get(0).getAsJsonObject().get("url").toString();
+                newsList.add(news);
+            }
+        }
+        return newsList;
+    }
 }

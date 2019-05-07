@@ -168,7 +168,7 @@ public class HistoryFragment extends Fragment {
                             stepCount.setDate(new Date());
                             stepCount.setStepCount(StepService.CURRENT_STEP);
                             if (stepCountList == null) stepCountList = new ArrayList<>();
-                            stepCountList.add(stepCount);
+                            stepCountList.add(0, stepCount);
                             commonAdapter.setDatas(stepCountList);
                         }
                         commonAdapter.notifyDataSetChanged();
