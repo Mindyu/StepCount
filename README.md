@@ -30,7 +30,7 @@ todo
 - [x] 引导页、欢迎页面动画显示 <https://blog.csdn.net/h176nhx7/article/details/81571957?tdsourcetag=s_pctim_aiomsg> 
 - [x] 健康资讯模块（API）+ 下拉刷新 + 网页跳转
 - [ ] GPS轨迹绘制
-- [ ] 周、月维度运动报告
+- [x] 周、月维度运动报告
 - [x] 自定义标题栏、标题栏渐变色
 - [x] Activity 重写，滑动返回
 - [ ] 跑步、步行、骑行多模式适配

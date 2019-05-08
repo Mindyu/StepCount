@@ -205,6 +205,8 @@ public class HistoryFragment extends Fragment {
                             stepCountList.add(0, stepCount);
                             commonAdapter.setDatas(stepCountList);
                         }
+                        fillWeekChartData(stepCountList);
+                        fillMonthChartData(stepCountList);
                         commonAdapter.notifyDataSetChanged();
                         refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
                     }

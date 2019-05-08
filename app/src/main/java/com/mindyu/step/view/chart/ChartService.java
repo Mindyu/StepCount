@@ -14,6 +14,7 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +63,8 @@ public class ChartService {
      * @param axeColor   坐标轴颜色
      * @param curveColor 曲线颜色
      */
-    public void setXYMultipleSeriesRenderer( String chartTitle, String xTitle, String yTitle, int axeColor,
-            int curveColor) {
+    public void setXYMultipleSeriesRenderer(String chartTitle, String xTitle, String yTitle, int axeColor,
+                                            int curveColor) {
         multipleSeriesRenderer = new XYMultipleSeriesRenderer();
         multipleSeriesRenderer.setChartTitle(chartTitle);
         multipleSeriesRenderer.setChartTitleTextSize(50);
@@ -72,7 +73,7 @@ public class ChartService {
         // multipleSeriesRenderer.setRange(new double[] { 0, maxX, 0, maxY });//xy轴的范围
         multipleSeriesRenderer.setXLabels(0);
         multipleSeriesRenderer.setYLabels(10);
-        multipleSeriesRenderer.setXLabelsAlign(Paint.Align.RIGHT);
+        multipleSeriesRenderer.setXLabelsAlign(Paint.Align.CENTER);
         multipleSeriesRenderer.setYLabelsAlign(Paint.Align.RIGHT);
         multipleSeriesRenderer.setAntialiasing(true);
         multipleSeriesRenderer.setAxisTitleTextSize(30);
@@ -115,17 +116,21 @@ public class ChartService {
         mSeries.clear();
         SimpleDateFormat sdf = new SimpleDateFormat("MM-dd", Locale.CHINA);
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        int size = Math.min(xList.size(), yList.size());
+        int size = Math.min(xList.size(), yList.size()), distance = size / 5;
+        if (distance == 0) distance = 1;
         for (int i = 0; i < size; i++) {
             Date date = xList.get(i);
             try {
-                date = sdf2.parse(sdf2.format(xList.get(i)));
-            } catch (ParseException e) {
+                date = sdf2.parse(sdf2.format(date));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             mSeries.add(date, yList.get(i));      // 对日期格式化，去掉时间的影响 ，使得图表横坐标间隔相同
-            multipleSeriesRenderer.addXTextLabel((double)xList.get(i).getTime(), sdf.format(xList.get(i)));
+            if (i % distance == 0)                // 对月视图的横坐标重叠问题进行动态设置间距
+                multipleSeriesRenderer.addXTextLabel((double) date.getTime(), sdf.format(xList.get(i)));
+            else
+                multipleSeriesRenderer.addXTextLabel((double) date.getTime(), "");
         }
-        mGraphicalView.repaint();//此处也可以调用invalidate()
+        mGraphicalView.repaint();   // 此处也可以调用invalidate()
     }
 }
