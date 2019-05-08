@@ -20,30 +20,37 @@ android {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'com.android.support:appcompat-v7:26.+'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.orhanobut:logger:1.8'
-    implementation 'com.hjm:BottomTabBar:1.2.2'                                // 底部导航栏
-    implementation 'com.makeramen:roundedimageview:2.2.1'                             // 圆形头像
-//    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-5'   // 上拉刷新下拉加载
+    implementation 'com.hjm:BottomTabBar:1.2.2'
+    // 底部导航栏
+    implementation 'com.makeramen:roundedimageview:2.2.1'
+    // 圆形头像
     implementation 'org.litepal.android:core:2.0.0'
-    implementation 'com.android.support:design:26.+'
-    implementation 'com.android.support:support-v4:26.+'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'jp.wasabeef:glide-transformations:2.0.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5' // image-loader
+    // json解析
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    // image-loader
     implementation 'com.youth.banner:banner:1.4.10'
+    // 导航栏动画
     implementation 'io.reactivex:rxjava:1.0.14'
+    // rxJava
     implementation 'io.reactivex:rxandroid:1.0.1'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.shizhefei:LargeImageView:1.1.0'
     implementation 'com.wuhenzhizao:titlebar:1.1.4'
-    implementation 'com.jude:swipebackhelper:2.1.5'     // 滑动管理类
-
+    // 自定义标题栏
+    implementation 'com.jude:swipebackhelper:2.1.5'
+    // 滑动管理类
+    implementation files('libs/achartengine-1.1.0.jar')
 }

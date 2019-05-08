@@ -2,6 +2,7 @@ package com.mindyu.step.fragment;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,9 +29,11 @@ import com.mindyu.step.step.bean.StepCountData;
 import com.mindyu.step.step.service.StepService;
 import com.mindyu.step.user.bean.Info;
 import com.mindyu.step.user.bean.StepCount;
+import com.mindyu.step.view.chart.ChartService;
 import com.orhanobut.logger.Logger;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
+import org.achartengine.GraphicalView;
 import org.litepal.LitePal;
 
 import java.io.IOException;
@@ -57,8 +61,13 @@ public class HistoryFragment extends Fragment {
 
     private ListView history_lv;
     private SwipeRefreshLayout refresh_layout;
+    private LinearLayout chart_layout;
+    private LinearLayout sport_chart;
+    private ChartService mService;
+    private GraphicalView mView;
     private CommonAdapter commonAdapter;
     private CommonTitleBar topbar;
+    private boolean showChart = false;
 
     private void initViews(View view) {
         history_lv = view.findViewById(R.id.lv);
@@ -66,14 +75,17 @@ public class HistoryFragment extends Fragment {
         topbar = view.findViewById(R.id.topbar);
         topbar.getLeftTextView().setText("历史");
         topbar.setBackgroundResource(R.drawable.shape_gradient);
+        chart_layout = view.findViewById(R.id.chart_layout);
+        sport_chart = view.findViewById(R.id.sport_chart);
     }
 
-    private void initEvent(View view){
+    private void initEvent(View view) {
         topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
             @Override
             public void onClicked(View v, int action, String extra) {
                 if (action == CommonTitleBar.ACTION_RIGHT_BUTTON) {
-                    Toast.makeText(getContext(), "历史", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "历史", Toast.LENGTH_SHORT).show();
+                    refreshShowLayout();
                 }
             }
         });
@@ -93,7 +105,18 @@ public class HistoryFragment extends Fragment {
         } else {
             initDataFromMysql();
         }
+        initChart();
         return view;
+    }
+
+    private void initChart() {
+        mService = new ChartService(getContext());
+        mService.setXYMultipleSeriesDataset("本周运动记录曲线");
+        mService.setXYMultipleSeriesRenderer("日期", "步数",
+                Color.BLACK, Color.BLACK);
+        mView = mService.getGraphicalView();
+        sport_chart.addView(mView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
     }
 
     private void initDataFromSqllite() {
@@ -229,10 +252,38 @@ public class HistoryFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<StepCount> result) {
-            if (result == null)
+            if (result == null){
                 Toast.makeText(getContext(), "获取步数数据失败", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            fillChartData(result);
             commonAdapter.setDatas(result);
             commonAdapter.notifyDataSetChanged();
         }
     }
+
+    // 根据 showChart 的值设置显示布局
+    private void refreshShowLayout() {
+        showChart = !showChart;
+        if (showChart) {
+            chart_layout.setVisibility(View.VISIBLE);
+            refresh_layout.setVisibility(View.GONE);
+        } else {
+            chart_layout.setVisibility(View.GONE);
+            refresh_layout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void fillChartData(List<StepCount> result) {
+        List<Date> xList = new ArrayList<>();
+        List<Double> yList = new ArrayList<>();
+        for (int i = 0; i < result.size() && i < 7; i++) {
+            StepCount stepCount = result.get(i);
+            Log.d(TAG, "fillChartData: "+stepCount);
+            xList.add(stepCount.getDate());
+            yList.add(stepCount.getStepCount().doubleValue());
+        }
+        mService.updateChart(xList, yList);
+    }
+
 }
