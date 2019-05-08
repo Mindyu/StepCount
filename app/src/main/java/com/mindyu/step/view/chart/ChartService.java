@@ -13,8 +13,11 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ChartService {
 
@@ -35,8 +38,8 @@ public class ChartService {
      * @return
      */
     public GraphicalView getGraphicalView() {
-        mGraphicalView = ChartFactory.getCubeLineChartView(context,
-                multipleSeriesDataset, multipleSeriesRenderer, 0.1f);
+        mGraphicalView = ChartFactory.getLineChartView(context,
+                multipleSeriesDataset, multipleSeriesRenderer);
         return mGraphicalView;
     }
 
@@ -59,24 +62,25 @@ public class ChartService {
      * @param axeColor   坐标轴颜色
      * @param curveColor 曲线颜色
      */
-    public void setXYMultipleSeriesRenderer( String xTitle, String yTitle, int axeColor,
+    public void setXYMultipleSeriesRenderer( String chartTitle, String xTitle, String yTitle, int axeColor,
             int curveColor) {
         multipleSeriesRenderer = new XYMultipleSeriesRenderer();
+        multipleSeriesRenderer.setChartTitle(chartTitle);
+        multipleSeriesRenderer.setChartTitleTextSize(50);
         multipleSeriesRenderer.setXTitle(xTitle);
         multipleSeriesRenderer.setYTitle(yTitle);
         // multipleSeriesRenderer.setRange(new double[] { 0, maxX, 0, maxY });//xy轴的范围
-        multipleSeriesRenderer.setXLabels(7);
+        multipleSeriesRenderer.setXLabels(0);
         multipleSeriesRenderer.setYLabels(10);
         multipleSeriesRenderer.setXLabelsAlign(Paint.Align.RIGHT);
         multipleSeriesRenderer.setYLabelsAlign(Paint.Align.RIGHT);
         multipleSeriesRenderer.setAntialiasing(true);
-        multipleSeriesRenderer.setAxisTitleTextSize(20);
-        multipleSeriesRenderer.setChartTitleTextSize(20);
-        multipleSeriesRenderer.setLabelsTextSize(20);
-        multipleSeriesRenderer.setLegendTextSize(20);
-        multipleSeriesRenderer.setPointSize(2f);        // 曲线描点尺寸
+        multipleSeriesRenderer.setAxisTitleTextSize(30);
+        multipleSeriesRenderer.setLabelsTextSize(30);
+        multipleSeriesRenderer.setLegendTextSize(30);
+        multipleSeriesRenderer.setPointSize(5f);        // 曲线描点尺寸
         multipleSeriesRenderer.setFitLegend(true);      // 适应屏幕
-        multipleSeriesRenderer.setMargins(new int[]{20, 50, 15, 10});
+        multipleSeriesRenderer.setMargins(new int[]{50, 105, 40, 30}); // 上左下右
         multipleSeriesRenderer.setShowGrid(false);
         multipleSeriesRenderer.setZoomEnabled(true, true);
         multipleSeriesRenderer.setAxesColor(axeColor);
@@ -84,7 +88,7 @@ public class ChartService {
         multipleSeriesRenderer.setMarginsColor(Color.WHITE);    // 边距背景色，默认背景色为黑色，这里修改为白色
         mRenderer = new XYSeriesRenderer();
         mRenderer.setColor(curveColor);
-        mRenderer.setLineWidth(3);
+        mRenderer.setLineWidth(4);
         // mRenderer.setDisplayChartValues(true);
         mRenderer.setPointStyle(PointStyle.TRIANGLE);             // 描点风格，可以为圆点，方形点等等
         multipleSeriesRenderer.addSeriesRenderer(mRenderer);
@@ -109,11 +113,19 @@ public class ChartService {
      */
     public void updateChart(List<Date> xList, List<Double> yList) {
         mSeries.clear();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd", Locale.CHINA);
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         int size = Math.min(xList.size(), yList.size());
         for (int i = 0; i < size; i++) {
-            mSeries.add(xList.get(i), yList.get(i));
+            Date date = xList.get(i);
+            try {
+                date = sdf2.parse(sdf2.format(xList.get(i)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            mSeries.add(date, yList.get(i));      // 对日期格式化，去掉时间的影响 ，使得图表横坐标间隔相同
+            multipleSeriesRenderer.addXTextLabel((double)xList.get(i).getTime(), sdf.format(xList.get(i)));
         }
         mGraphicalView.repaint();//此处也可以调用invalidate()
     }
-
 }

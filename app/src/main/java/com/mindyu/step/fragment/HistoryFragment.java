@@ -62,9 +62,12 @@ public class HistoryFragment extends Fragment {
     private ListView history_lv;
     private SwipeRefreshLayout refresh_layout;
     private LinearLayout chart_layout;
-    private LinearLayout sport_chart;
+    private LinearLayout week_sport_chart;
     private ChartService mService;
     private GraphicalView mView;
+    private LinearLayout month_sport_chart;
+    private ChartService mServiceMonth;
+    private GraphicalView mViewMonth;
     private CommonAdapter commonAdapter;
     private CommonTitleBar topbar;
     private boolean showChart = false;
@@ -76,7 +79,8 @@ public class HistoryFragment extends Fragment {
         topbar.getLeftTextView().setText("历史");
         topbar.setBackgroundResource(R.drawable.shape_gradient);
         chart_layout = view.findViewById(R.id.chart_layout);
-        sport_chart = view.findViewById(R.id.sport_chart);
+        week_sport_chart = view.findViewById(R.id.week_sport_chart);
+        month_sport_chart = view.findViewById(R.id.month_sport_chart);
     }
 
     private void initEvent(View view) {
@@ -112,10 +116,17 @@ public class HistoryFragment extends Fragment {
     private void initChart() {
         mService = new ChartService(getContext());
         mService.setXYMultipleSeriesDataset("本周运动记录曲线");
-        mService.setXYMultipleSeriesRenderer("日期", "步数",
-                Color.BLACK, Color.BLACK);
+        mService.setXYMultipleSeriesRenderer("周运动视图", "日期", "步数",
+                Color.BLACK, Color.RED);
         mView = mService.getGraphicalView();
-        sport_chart.addView(mView, new LinearLayout.LayoutParams(
+        week_sport_chart.addView(mView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        mServiceMonth = new ChartService(getContext());
+        mServiceMonth.setXYMultipleSeriesDataset("本月运动记录曲线");
+        mServiceMonth.setXYMultipleSeriesRenderer("月运动视图", "日期", "步数",
+                Color.BLACK, Color.LTGRAY);
+        mViewMonth = mServiceMonth.getGraphicalView();
+        month_sport_chart.addView(mViewMonth, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
     }
 
@@ -256,7 +267,8 @@ public class HistoryFragment extends Fragment {
                 Toast.makeText(getContext(), "获取步数数据失败", Toast.LENGTH_SHORT).show();
                 return;
             }
-            fillChartData(result);
+            fillWeekChartData(result);
+            fillMonthChartData(result);
             commonAdapter.setDatas(result);
             commonAdapter.notifyDataSetChanged();
         }
@@ -274,7 +286,7 @@ public class HistoryFragment extends Fragment {
         }
     }
 
-    private void fillChartData(List<StepCount> result) {
+    private void fillWeekChartData(List<StepCount> result) {
         List<Date> xList = new ArrayList<>();
         List<Double> yList = new ArrayList<>();
         for (int i = 0; i < result.size() && i < 7; i++) {
@@ -286,4 +298,15 @@ public class HistoryFragment extends Fragment {
         mService.updateChart(xList, yList);
     }
 
+    private void fillMonthChartData(List<StepCount> result) {
+        List<Date> xList = new ArrayList<>();
+        List<Double> yList = new ArrayList<>();
+        for (int i = 0; i < result.size() && i < 30; i++) {
+            StepCount stepCount = result.get(i);
+            Log.d(TAG, "fillChartData: "+stepCount);
+            xList.add(stepCount.getDate());
+            yList.add(stepCount.getStepCount().doubleValue());
+        }
+        mServiceMonth.updateChart(xList, yList);
+    }
 }

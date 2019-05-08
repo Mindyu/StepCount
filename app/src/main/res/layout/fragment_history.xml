@@ -38,22 +38,23 @@
     <LinearLayout
         android:id="@+id/chart_layout"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_margin="@dimen/margin15"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textSize="20sp"
-            android:text="运动曲线图" />
+        <LinearLayout
+            android:id="@+id/week_sport_chart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/sport_chart"
+            android:id="@+id/month_sport_chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal">
         </LinearLayout>
     </LinearLayout>
