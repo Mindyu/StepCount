@@ -1,28 +1,16 @@
 package com.mindyu.step.activity;
 
-import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.mindyu.step.R;
-import com.mindyu.step.step.utils.SharedPreferencesUtils;
+import com.mindyu.step.util.SharedPreferencesUtils;
 import com.mindyu.step.util.DateTimePickerUtil;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 
 public class SetPlanActivity extends SwipeBackActivity implements View.OnClickListener {

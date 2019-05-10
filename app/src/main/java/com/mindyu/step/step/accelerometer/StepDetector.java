@@ -12,46 +12,44 @@ import android.hardware.SensorEventListener;
 public class StepDetector implements SensorEventListener {
 
     //存放三轴数据
-    float[] oriValues = new float[3];
-    final int ValueNum = 4;
+    private float[] oriValues = new float[3];
+    private final int ValueNum = 4;
     //用于存放计算阈值的波峰波谷差值
-    float[] tempValue = new float[ValueNum];
-    int tempCount = 0;
+    private float[] tempValue = new float[ValueNum];
+    private int tempCount = 0;
     //是否上升的标志位
-    boolean isDirectionUp = false;
+    private boolean isDirectionUp = false;
     //持续上升次数
-    int continueUpCount = 0;
+    private int continueUpCount = 0;
     //上一点的持续上升的次数，为了记录波峰的上升次数
-    int continueUpFormerCount = 0;
+    private int continueUpFormerCount = 0;
     //上一点的状态，上升还是下降
-    boolean lastStatus = false;
+    private boolean lastStatus = false;
     //波峰值
-    float peakOfWave = 0;
+    private float peakOfWave = 0;
     //波谷值
-    float valleyOfWave = 0;
+    private float valleyOfWave = 0;
     //此次波峰的时间
-    long timeOfThisPeak = 0;
+    private long timeOfThisPeak = 0;
     //上次波峰的时间
-    long timeOfLastPeak = 0;
+    private long timeOfLastPeak = 0;
     //当前的时间
-    long timeOfNow = 0;
+    private long timeOfNow = 0;
     //当前传感器的值
-    float gravityNew = 0;
+    private float gravityNew = 0;
     //上次传感器的值
-    float gravityOld = 0;
+    private float gravityOld = 0;
     //动态阈值需要动态的数据，这个值用于这些动态数据的阈值
-    final float InitialValue = (float) 1.3;
+    private final float InitialValue = (float) 1.3;
     //初始阈值
-    float ThreadValue = (float) 2.0;
+    private float ThreadValue = (float) 2.0;
     //波峰波谷时间差
-    int TimeInterval = 250;
+    private int TimeInterval = 250;
     private StepCountListener mStepListeners;
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        for (int i = 0; i < 3; i++) {
-            oriValues[i] = event.values[i];
-        }
+        System.arraycopy(event.values,0, oriValues,0,3);
         gravityNew = (float) Math.sqrt(oriValues[0] * oriValues[0]
                 + oriValues[1] * oriValues[1] + oriValues[2] * oriValues[2]);
         detectorNewStep(gravityNew);

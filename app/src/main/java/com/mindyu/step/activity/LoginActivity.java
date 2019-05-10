@@ -20,6 +20,7 @@ import com.mindyu.step.R;
 import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
+import com.mindyu.step.util.SharedPreferencesUtils;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class LoginActivity extends SwipeBackActivity {
     private EditText password_edit;
     private CheckBox cbRememberPass;
     private CheckBox autologin;
-    private SharedPreferences sp;
+    private SharedPreferencesUtils sp;
     private Button signBtn;
     private ProgressDialog progressDialog;
     private TextView signup_tv;
@@ -99,13 +100,13 @@ public class LoginActivity extends SwipeBackActivity {
     }
 
     private void initText() {
-        sp = getSharedPreferences("userInfo", 0);
-        String name = sp.getString("user_name", "");
-        String pass = sp.getString("password", "");
+        sp = new SharedPreferencesUtils(this);
+        String name = sp.getParam("user_name", "").toString();
+        String pass = sp.getParam("password", "").toString();
 
-        boolean choseRemember = sp.getBoolean("remember_pass", false);
-        boolean choseAutoLogin = sp.getBoolean("auto_login", false);
-        boolean directLogin = sp.getBoolean("direct_login", false);
+        boolean choseRemember = (boolean) sp.getParam("remember_pass", false);
+        boolean choseAutoLogin = (boolean) sp.getParam("auto_login", false);
+        boolean directLogin = (boolean) sp.getParam("direct_login", false);
 
         email_edit.setText(name);
         //如果上次选了记住密码，那进入登录页面也自动勾选记住密码，并填上用户名和密码
@@ -248,17 +249,16 @@ public class LoginActivity extends SwipeBackActivity {
             dismissDialog();
 
             if (result != null && result.getData() != null) {
-                SharedPreferences.Editor editor = sp.edit();
                 //保存用户名和密码
-                editor.putString("user_name", mName);
-                editor.putString("password", mPassword);
+                sp.setParam("user_name", mName);
+                sp.setParam("password", mPassword);
+
                 //是否记住密码
-                editor.putBoolean("remember_pass", cbRememberPass.isChecked());
+                sp.setParam("remember_pass", cbRememberPass.isChecked());
                 //是否自动登录
-                editor.putBoolean("auto_login", autologin.isChecked());
+                sp.setParam("auto_login", autologin.isChecked());
                 if (autologin.isChecked())
-                    editor.putBoolean("direct_login", true);
-                editor.apply();
+                    sp.setParam("direct_login", true);
 
                 SystemParameter.user = result.getData();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);

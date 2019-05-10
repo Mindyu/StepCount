@@ -8,12 +8,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.mindyu.step.R;
+import com.mindyu.step.util.SharedPreferencesUtils;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 public class UserActivity extends SwipeBackActivity {
 
     private Button quitBtn;
-    private SharedPreferences sp;
+    private SharedPreferencesUtils sp;
     private CommonTitleBar topbar;
 
     @Override
@@ -32,13 +33,11 @@ public class UserActivity extends SwipeBackActivity {
     }
 
     private void initEvents(){
+        sp = new SharedPreferencesUtils(this);
         quitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sp = getSharedPreferences("userInfo", 0);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("direct_login", false);
-                editor.commit();
+                sp.setParam("direct_login", false);
 
                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                 startActivity(intent);

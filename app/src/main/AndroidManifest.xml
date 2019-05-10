@@ -53,7 +53,6 @@
             android:name=".step.service.StepService"
             android:priority="1000">
             <intent-filter>
-
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
@@ -64,28 +63,12 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </service>
-        <service
-            android:name=".pedometer.StepsDetectService"
-            android:priority="1000"
-            android:process="cn.bluemobi.dylan.step..pedometer.StepsDetectService">
-            <intent-filter>
-
-                <!-- 系统启动完成后会调用 -->
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.DATE_CHANGED" />
-                <action android:name="android.intent.action.MEDIA_MOUNTED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.intent.action.ACTION_TIME_TICK" />
-                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
-            </intent-filter>
-        </service> <!-- 内容提供器注册 -->
+        <!-- 内容提供器注册 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.mindyu.step.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <!-- 指定Uri的共享路径 -->
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"

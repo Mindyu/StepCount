@@ -29,6 +29,7 @@ import com.mindyu.step.R;
 import com.mindyu.step.activity.WebViewActicity;
 import com.mindyu.step.adapter.CommonAdapter;
 import com.mindyu.step.adapter.CommonViewHolder;
+import com.mindyu.step.util.SharedPreferencesUtils;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class HotTopicFragment extends Fragment {
     private SwipeRefreshLayout refresh_layout;
     private CommonAdapter commonAdapter;
     private CommonTitleBar topbar;
-    private SharedPreferences sp;
+    private SharedPreferencesUtils sp;
 
     public HotTopicFragment() {
     }
@@ -121,8 +122,8 @@ public class HotTopicFragment extends Fragment {
 
         List<News> result;
         // 先从本地缓存中获取
-        sp = getActivity().getSharedPreferences("news_info", 0);
-        String data = sp.getString("newsList", "");
+        sp = new SharedPreferencesUtils(getContext());
+        String data = sp.getParam("newsList", "").toString();
         result = parseComplexJsonStr(data);
 
         // 异步获取新闻信息
@@ -198,11 +199,9 @@ public class HotTopicFragment extends Fragment {
                 String data = response.body().string();
                 Log.d(TAG, "onResponse: " + data);
 
-                String originData = sp.getString("newsList", "");
+                String originData = sp.getParam("newsList", "").toString();
                 if (!originData.equals(data)) {
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("newsList", data);
-                    editor.apply();
+                    sp.setParam("newsList", data);
                 }
 
                 List<News> result = parseComplexJsonStr(data);

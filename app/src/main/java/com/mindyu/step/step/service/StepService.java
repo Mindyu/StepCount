@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mindyu.step.activity.LoginActivity;
 import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.step.bean.StepCountData;
 import com.mindyu.step.user.bean.Result;
@@ -112,16 +113,15 @@ public class StepService extends Service implements SensorEventListener {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
-        initNotification();
-        initTodayData();
-        initBroadcastReceiver();
+        initNotification();             // 初始化通知栏
+        initTodayData();                // 初始化当天步数
+        initBroadcastReceiver();        // 注册广播
         new Thread(new Runnable() {
             public void run() {
-                startStepDetector();
+                startStepDetector();    // 根据传感器类型启动计步服务
             }
         }).start();
-        startTimeCount();
-
+        startTimeCount();               // 开始定时执行保存操作
     }
 
     /**
@@ -215,43 +215,21 @@ public class StepService extends Service implements SensorEventListener {
                 } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
                     Log.i(TAG, " receive Intent.ACTION_CLOSE_SYSTEM_DIALOGS");
                     //保存一次
-                    if (SystemParameter.use_local_storage){
-                        saveToSqlite();
-                    }else {
-                        saveToMysql();
-                    }
+                    save();
                 } else if (Intent.ACTION_SHUTDOWN.equals(intent.getAction())) {
                     Log.i(TAG, " receive ACTION_SHUTDOWN");
-                    if (SystemParameter.use_local_storage){
-                        saveToSqlite();
-                    }else {
-                        saveToMysql();
-                    }
+                    save();
                 } else if (Intent.ACTION_DATE_CHANGED.equals(action)) {//日期变化步数重置为0
-//                    Logger.d("重置步数" + StepDcretor.CURRENT_STEP);
-                    if (SystemParameter.use_local_storage){
-                        saveToSqlite();
-                    }else {
-                        saveToMysql();
-                    }
+                    save();
                     isNewDay();
                 } else if (Intent.ACTION_TIME_CHANGED.equals(action)) {
                     //时间变化步数重置为0
                     isCall();
-                    if (SystemParameter.use_local_storage){
-                        saveToSqlite();
-                    }else {
-                        saveToMysql();
-                    }
+                    save();
                     isNewDay();
                 } else if (Intent.ACTION_TIME_TICK.equals(action)) {//日期变化步数重置为0
                     isCall();
-//                    Logger.d("重置步数" + StepDcretor.CURRENT_STEP);
-                    if (SystemParameter.use_local_storage){
-                        saveToSqlite();
-                    }else {
-                        saveToMysql();
-                    }
+                    save();
                     isNewDay();
                 }
             }
@@ -304,7 +282,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     private void updateNotification() {
         //设置点击跳转
-        Intent hangIntent = new Intent(this, MainActivity.class);
+        Intent hangIntent = new Intent(this, LoginActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Notification notification = mBuilder.setContentTitle(getResources().getString(R.string.app_name))
@@ -348,7 +326,7 @@ public class StepService extends Service implements SensorEventListener {
     private void remindNotify() {
 
         //设置点击跳转
-        Intent hangIntent = new Intent(this, MainActivity.class);
+        Intent hangIntent = new Intent(this, LoginActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         String plan = this.getSharedPreferences("share_date", Context.MODE_MULTI_PROCESS).getString("planWalk_QTY", "7000");
@@ -427,12 +405,12 @@ public class StepService extends Service implements SensorEventListener {
         // 获取传感器管理器的实例
         sensorManager = (SensorManager) this
                 .getSystemService(SENSOR_SERVICE);
-        //android4.4以后可以使用计步传感器
+        //android 4.4 以后可以使用计步传感器
         int VERSION_CODES = Build.VERSION.SDK_INT;
         if (VERSION_CODES >= 19) {
             addCountStepListener();
         } else {
-            addBasePedometerListener();
+            addBasePedometerListener();    // 通过加速度传感器来记步
         }
     }
 
@@ -460,7 +438,7 @@ public class StepService extends Service implements SensorEventListener {
             sensorManager.registerListener(StepService.this, detectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
         } else {
             Log.v(TAG, "Count sensor not available!");
-            addBasePedometerListener();
+            addBasePedometerListener();    // 传感器不可使用时，通过加速度传感器来记步
         }
     }
 
@@ -481,29 +459,29 @@ public class StepService extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (stepSensorType == Sensor.TYPE_STEP_COUNTER) {
-            //获取当前传感器返回的临时步数
+            // 获取当前传感器返回的临时步数
             int tempStep = (int) event.values[0];
-            //首次如果没有获取手机系统中已有的步数则获取一次系统中APP还未开始记步的步数
+            // 首次如果没有获取手机系统中已有的步数则获取一次系统中APP还未开始记步的步数
             if (!hasRecord) {
                 hasRecord = true;
                 hasStepCount = tempStep;
             } else {
-                //获取APP打开到现在的总步数=本次系统回调的总步数-APP打开之前已有的步数
+                // 获取APP打开到现在的总步数=本次系统回调的总步数-APP打开之前已有的步数
                 int thisStepCount = tempStep - hasStepCount;
-                //本次有效步数=（APP打开后所记录的总步数-上一次APP打开后所记录的总步数）
+                // 本次有效步数=（APP打开后所记录的总步数-上一次APP打开后所记录的总步数）
                 int thisStep = thisStepCount - previousStepCount;
-                //总步数=现有的步数+本次有效步数
+                // 总步数=现有的步数+本次有效步数
                 CURRENT_STEP += (thisStep);
-                //记录最后一次APP打开到现在的总步数
+                // 记录最后一次APP打开到现在的总步数
                 previousStepCount = thisStepCount;
             }
-            Logger.d("tempStep" + tempStep);
+            updateNotification();
         } else if (stepSensorType == Sensor.TYPE_STEP_DETECTOR) {
             if (event.values[0] == 1.0) {
                 CURRENT_STEP++;
             }
+            updateNotification();
         }
-        updateNotification();
     }
 
     /**
@@ -542,23 +520,30 @@ public class StepService extends Service implements SensorEventListener {
      * 保存记步数据
      */
     class TimeCount extends CountDownTimer {
-        public TimeCount(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
+        TimeCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);   // 总时长，和时间间隔
         }
 
         @Override
         public void onFinish() {
             // 如果计时器正常结束，则开始计步
             time.cancel();
-            saveToSqlite();
-            startTimeCount();
+            save();
+            startTimeCount();   // 继续执行下一轮的定时
         }
 
         @Override
-        public void onTick(long millisUntilFinished) {
-
+        public void onTick(long millisUntilFinished) {  // 每个时间间隔里的回调
         }
+    }
 
+    private void save(){
+        if (SystemParameter.use_local_storage){
+            saveToSqlite();
+        }else {
+            saveToSqlite();
+            saveToMysql();
+        }
     }
 
     /**

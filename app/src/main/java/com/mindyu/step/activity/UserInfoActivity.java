@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
@@ -313,8 +314,10 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
 
     //调用摄像头拍照
     public void takePhoto() {
+        // 启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         //创建File对象，用于存储拍照后的图片
-        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        File outputImage = new File(Environment.getExternalStorageDirectory(), "output_image.jpg");
         try {
             if (outputImage.exists()) {
                 outputImage.delete();
@@ -324,12 +327,11 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-            imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
+                imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//这里加入flag
         } else {
             imageUri = Uri.fromFile(outputImage);
         }
-        // 启动相机程序
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }
