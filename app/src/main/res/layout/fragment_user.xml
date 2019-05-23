@@ -99,7 +99,7 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/date_update"
+            android:id="@+id/soft_update"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="62px"
-                android:text="数据同步"
+                android:text="软件更新"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 
@@ -135,7 +135,7 @@
             android:background="@color/black_text" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/soft_update"
+            android:id="@+id/limit_setting"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="62px"
-                android:text="软件更新"
+                android:text="权限设置"
                 android:textColor="@color/black_text"
                 android:textSize="18sp" />
 

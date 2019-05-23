@@ -21,4 +21,9 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
     </string>
+    <string name="limit_desc">由于系统的省电设置和后台进程的限制，会误将正在记录用户步数的服务杀掉。
+        为保证本系统的运动记录更好的运行，请参照如下设置方法！</string>
+    <string name="background_setting">后台保护设置</string>
+    <string name="permit_setting">为保证运动状态记录的准确性，强烈建议添加运动管理系统到后台保护名单中。</string>
+    <string name="setting_way">设置方法：安全中心->授权管理->自启动管理->打开"运动管理系统"的开关</string>
 </resources>

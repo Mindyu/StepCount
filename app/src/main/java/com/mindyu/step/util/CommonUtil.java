@@ -1,6 +1,7 @@
 package com.mindyu.step.util;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.WindowManager;
 
 public class CommonUtil {
@@ -17,6 +18,10 @@ public class CommonUtil {
     public static String formatFloat(double value){
         java.text.DecimalFormat df = new java.text.DecimalFormat("#.##");
         return df.format(value);
+    }
+
+    public static String getMobileType() {
+        return Build.MANUFACTURER;
     }
 
 }

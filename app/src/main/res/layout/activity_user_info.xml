@@ -151,6 +151,38 @@
         android:layout_height="1px"
         android:background="@color/black_text" />
 
+    <LinearLayout
+        android:id="@+id/phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin15"
+            android:gravity="center"
+            android:text="手机号"
+            android:textColor="@color/black_text"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/phone_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:textColor="@color/black_text"
+            android:background="@null"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black_text" />
 
     <LinearLayout
         android:id="@+id/user_birth"
@@ -199,6 +231,7 @@
             android:layout_margin="@dimen/margin15"
             android:gravity="center"
             android:text="身高"
+            android:inputType="numberDecimal"
             android:textColor="@color/black_text"
             android:textSize="18sp" />
 
@@ -232,6 +265,7 @@
             android:layout_margin="@dimen/margin15"
             android:gravity="center"
             android:text="体重"
+            android:inputType="numberDecimal"
             android:textColor="@color/black_text"
             android:textSize="18sp" />
 
@@ -265,6 +299,7 @@
             android:layout_margin="@dimen/margin15"
             android:gravity="center"
             android:text="邮箱"
+            android:inputType="textEmailAddress"
             android:textColor="@color/black_text"
             android:textSize="18sp" />
 

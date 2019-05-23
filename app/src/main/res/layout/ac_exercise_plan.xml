@@ -138,16 +138,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
-        android:background="@mipmap/btn_submit_bg"
+        android:background="@mipmap/btn_green_bg"
         android:text="保存"
         android:textColor="#ffffff"
         android:textSize="18dp" />
 
-    <WebView
-        android:id="@+id/wv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100px"
-        android:visibility="gone">
-    </WebView>
 </LinearLayout>

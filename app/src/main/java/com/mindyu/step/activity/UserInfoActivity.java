@@ -87,6 +87,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
 
     private EditText name_tv;
     private EditText email_tv;
+    private EditText phone_tv;
     private EditText birth_tv;
     private EditText height_tv;
     private EditText weight_tv;
@@ -95,7 +96,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
     private RadioGroup sexRadio;
     private RadioButton male_btn;
     private RadioButton female_btn;
-    private String sexString="";
+    private String sexString = "";
     private CommonTitleBar topbar;
 
     private LinearLayout avator_layout;
@@ -121,10 +122,11 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         initEvent();
     }
 
-    private void initView(){
+    private void initView() {
         avator_iv = findViewById(R.id.avator_iv);
         avator_layout = findViewById(R.id.avator_layout);
         name_tv = findViewById(R.id.name_tv);
+        phone_tv = findViewById(R.id.phone_tv);
         email_tv = findViewById(R.id.email_tv);
         birth_tv = findViewById(R.id.birth_tv);
         height_tv = findViewById(R.id.height_tv);
@@ -142,10 +144,10 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         Integer userId = SystemParameter.user.getId();
         name_tv.setText(SystemParameter.user.getUserName());
         refreshView();
-        if (SystemParameter.info==null) new UserInfoTask().execute(userId);
+        if (SystemParameter.info == null) new UserInfoTask().execute(userId);
     }
 
-    private void initEvent(){
+    private void initEvent() {
         birth_tv.setFocusable(false);
         birth_tv.setFocusableInTouchMode(false);
         birth_tv.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +165,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         sexRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (group.getCheckedRadioButtonId()){
+                switch (group.getCheckedRadioButtonId()) {
                     case R.id.male:
                         sexString = "男";
                         break;
@@ -177,14 +179,27 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             @Override
             public void onClicked(View v, int action, String extra) {
                 if (action == CommonTitleBar.ACTION_RIGHT_TEXT) {
+                    if (SystemParameter.info == null){
+                        SystemParameter.info = new Info();
+                        SystemParameter.info.setUserId(SystemParameter.user.getId());
+                        SystemParameter.info.setCreatedAt(new Date());
+                    }
                     // 保存用户详细信息
                     if (!"".equals(sexString)) {
                         SystemParameter.info.setSex(sexString);
                     }
-                    SystemParameter.info.setHeight(Double.valueOf(height_tv.getText().toString().trim()));
-                    SystemParameter.info.setWeight(Double.valueOf(weight_tv.getText().toString().trim()));
+                    String str = height_tv.getText().toString().trim();
+                    if (!"".equals(str)) {
+                        double val = Double.valueOf(str);
+                        SystemParameter.info.setHeight(val);
+                    }
+                    str = weight_tv.getText().toString().trim();
+                    if (!"".equals(str)) {
+                        double val = Double.valueOf(str);
+                        SystemParameter.info.setWeight(val);
+                    }
                     String dateStr = birth_tv.getText().toString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
                     try {
                         Date date = sdf.parse(dateStr);
                         SystemParameter.info.setBirthday(new java.sql.Date(date.getTime()));
@@ -192,19 +207,18 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
                         e.printStackTrace();
                     }
                     SystemParameter.info.setEmail(email_tv.getText().toString().trim());
+                    SystemParameter.info.setPhone(phone_tv.getText().toString().trim());
                     SystemParameter.info.setAddress(address_tv.getText().toString().trim());
                     SystemParameter.info.setIntro(intro_tv.getText().toString().trim());
 
                     Log.d(TAG, "onOptionsItemSelected: " + SystemParameter.info.toString());
                     new UserInfoSaveTask().execute(SystemParameter.info);
-
                     UserInfoActivity.this.finish();
                 }
             }
         });
     }
 
-    @SuppressLint("StaticFieldLeak")
     public class UserInfoTask extends AsyncTask<Integer, Void, Info> {
 
         @Override
@@ -213,22 +227,22 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             Request request = new Request.Builder()
                     .url(SystemParameter.ip + "/info/" + integers[0])
                     .build();
-            Log.d(TAG, "request url: "+ request);
+            Log.d(TAG, "request url: " + request);
             Call call = okHttpClient.newCall(request);
             try {
                 Response response = call.execute();
-                if (response.body()==null) {
+                if (response.body() == null) {
                     Log.d(TAG, "onResponse: 获取用户信息失败");
                     return null;
                 }
                 String data = response.body().string();
-                Log.d(TAG, "onResponse: "+data);
+                Log.d(TAG, "onResponse: " + data);
 
                 Gson gson = new Gson();
                 Info result = gson.fromJson(data, new TypeToken<Info>() {
                 }.getType());
 
-                if (result!= null){
+                if (result != null) {
                     return result;
                 }
             } catch (IOException e) {
@@ -240,15 +254,18 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         @Override
         protected void onPostExecute(Info info) {
             SystemParameter.info = info;
-            if (info!=null) loadImage(info.getAvator());
+            if (info != null && !"".equals(info.getAvator())) {
+                loadImage(info.getAvator());
+            }
             refreshView();
         }
     }
 
-    private void refreshView(){
-        if (SystemParameter.info==null) return;
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//显示2017-10-27格式
+    private void refreshView() {
+        if (SystemParameter.info == null) return;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);//显示2017-10-27格式
         birth_tv.setText(sdf.format(SystemParameter.info.getBirthday()));
+        phone_tv.setText(SystemParameter.info.getPhone());
         email_tv.setText(SystemParameter.info.getEmail());
         height_tv.setText(String.valueOf(SystemParameter.info.getHeight()));
         weight_tv.setText(String.valueOf(SystemParameter.info.getWeight()));
@@ -261,9 +278,9 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             female_btn.setChecked(true);
     }
 
-    private void loadImage(String avator){
-        if (avator==null || "".equals(avator)) return;
-        String imageUrl = SystemParameter.ip+"/img/download?filename="+avator;
+    private void loadImage(String avator) {
+        if (avator == null || "".equals(avator)) return;
+        String imageUrl = SystemParameter.ip + "/img/download?filename=" + avator;
         ImageSize targetSize = new ImageSize(100, 100);
         imageLoader.displayImage(imageUrl, avator_iv, targetSize);
     }
@@ -328,8 +345,8 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-                imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//这里加入flag
+            imageUri = FileProvider.getUriForFile(UserInfoActivity.this, "com.mindyu.step.fileprovider", outputImage);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//这里加入flag
         } else {
             imageUri = Uri.fromFile(outputImage);
         }
@@ -464,31 +481,31 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-            Gson gson=new GsonBuilder()
+            Gson gson = new GsonBuilder()
                     .setDateFormat("yyyy-MM-dd")
                     .create();
             //将对象转换为诶JSON格式字符串
-            String jsonStr=gson.toJson(infos[0]);
+            String jsonStr = gson.toJson(infos[0]);
             RequestBody body = RequestBody.create(JSON, jsonStr);
 
             Request request = new Request.Builder()
                     .url(SystemParameter.ip + "/info/")
                     .post(body)
                     .build();
-            Log.d(TAG, "request url: "+ request);
+            Log.d(TAG, "request url: " + request);
             Call call = okHttpClient.newCall(request);
             try {
                 Response response = call.execute();
-                if (response.body()==null) {
+                if (response.body() == null) {
                     Log.d(TAG, "onResponse: 保存用户信息失败");
                     return null;
                 }
                 String data = response.body().string();
-                Log.d(TAG, "onResponse: "+data);
+                Log.d(TAG, "onResponse: " + data);
 
                 Result result = gson.fromJson(data, new TypeToken<Result>() {
                 }.getType());
-                if (result.getCode() == 200){
+                if (result.getCode() == 200) {
                     return true;
                 }
             } catch (IOException e) {
@@ -499,7 +516,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
 
         @Override
         protected void onPostExecute(Boolean result) {
-            if (result){
+            if (result) {
                 Log.d(TAG, "onPostExecute: 保存成功");
                 Toast.makeText(UserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
                 return;
@@ -518,7 +535,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         new PictureUploadTask().execute(picturePath);
     }
 
-    public class PictureUploadTask extends AsyncTask<String, Void, Boolean>{
+    public class PictureUploadTask extends AsyncTask<String, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(String... localPath) {
@@ -530,7 +547,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
             File f = new File(localPath[0]);
             // f.getName() 使用用户名作为文件名，后端会增加时间戳
             String suffix = f.getName().substring(f.getName().lastIndexOf("."));
-            builder.addFormDataPart("file", SystemParameter.user.getUserName()+suffix, RequestBody.create(MEDIA_TYPE_PNG, f));
+            builder.addFormDataPart("file", SystemParameter.user.getUserName() + suffix, RequestBody.create(MEDIA_TYPE_PNG, f));
 
             final MultipartBody requestBody = builder.build();
             //构建请求
@@ -540,17 +557,17 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
                     .build();
             try {
                 Response response = client.newCall(request).execute();
-                if (response.body()==null) {
+                if (response.body() == null) {
                     Log.d(TAG, "onResponse: 头像上传失败");
                     return null;
                 }
                 String data = response.body().string();
-                Log.d(TAG, "onResponse: "+data);
+                Log.d(TAG, "onResponse: " + data);
 
                 Gson gson = new Gson();
                 Result result = gson.fromJson(data, new TypeToken<Result>() {
                 }.getType());
-                if (result != null && result.getCode() == 200){
+                if (result != null && result.getCode() == 200) {
                     SystemParameter.info.setAvator(result.getData().toString());
                     return true;
                 }
@@ -564,7 +581,7 @@ public class UserInfoActivity extends SwipeBackActivity implements View.OnClickL
         protected void onPostExecute(Boolean result) {
             if (pb != null)
                 pb.dismiss();
-            if (result){
+            if (result) {
                 Toast.makeText(UserInfoActivity.this, "头像上传成功", Toast.LENGTH_SHORT).show();
                 return;
             }

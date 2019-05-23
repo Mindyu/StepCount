@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 
 import com.mindyu.step.R;
 import com.mindyu.step.activity.AboutActivity;
+import com.mindyu.step.activity.LimitSettingActivity;
+import com.mindyu.step.activity.SensorCheckActivity;
 import com.mindyu.step.activity.UserActivity;
 import com.mindyu.step.activity.UserInfoActivity;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
@@ -23,7 +25,7 @@ public class UserFragment extends Fragment {
 
     private LinearLayout user_information;
     private LinearLayout user_management;
-    private LinearLayout date_update;
+    private LinearLayout limit_setting;
     private LinearLayout soft_update;
     private LinearLayout sensor_test;
     private LinearLayout about_system;
@@ -45,7 +47,7 @@ public class UserFragment extends Fragment {
     public void initView(View view) {
         user_information = view.findViewById(R.id.user_information);
         user_management = view.findViewById(R.id.user_management);
-        date_update = view.findViewById(R.id.date_update);
+        limit_setting = view.findViewById(R.id.limit_setting);
         soft_update = view.findViewById(R.id.soft_update);
         sensor_test = view.findViewById(R.id.sensor_test);
         about_system = view.findViewById(R.id.about_system);
@@ -70,10 +72,10 @@ public class UserFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        date_update.setOnClickListener(new View.OnClickListener() {
+        limit_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserActivity.class);
+                Intent intent = new Intent(getContext(), LimitSettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -87,7 +89,7 @@ public class UserFragment extends Fragment {
         sensor_test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserActivity.class);
+                Intent intent = new Intent(getContext(), SensorCheckActivity.class);
                 startActivity(intent);
             }
         });

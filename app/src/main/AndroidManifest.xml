@@ -47,6 +47,9 @@
         <activity android:name=".activity.SetPlanActivity" />
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.EditPasswordActivity" />
+        <activity android:name=".activity.SensorCheckActivity" />
+        <activity android:name=".activity.LimitSettingActivity" />
 
         <service
             android:name=".step.service.StepService"

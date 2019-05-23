@@ -202,7 +202,7 @@ public class StepService extends Service implements SensorEventListener {
         // 屏幕亮屏广播
         filter.addAction(Intent.ACTION_SCREEN_ON);
         // 屏幕解锁广播
-//        filter.addAction(Intent.ACTION_USER_PRESENT);
+        // filter.addAction(Intent.ACTION_USER_PRESENT);
         // 当长按电源键弹出“关机”对话或者锁屏时系统会发出这个广播
         // example：有时候会用到系统对话框，权限可能很高，会覆盖在锁屏界面或者“关机”对话框之上，
         // 所以监听这个广播，当收到时就隐藏自己的对话，如点击pad右下角部分弹出的对话框
@@ -566,7 +566,7 @@ public class StepService extends Service implements SensorEventListener {
 
         List<StepCountData> list = LitePal.where("today = ?", CURRENT_DATE).
                 find(StepCountData.class);
-        if (list.size() == 0 || list.isEmpty()) {
+        if (list.size() == 0) {
             StepCountData data = new StepCountData();
             data.setToday(CURRENT_DATE);
             data.setStep(tempStep + "");
@@ -627,7 +627,7 @@ public class StepService extends Service implements SensorEventListener {
                 Response response = call.execute();
                 if (response.body()==null) {
                     Log.d(TAG, "onResponse: 用户步数信息失败");
-                    return null;
+                    return false;
                 }
                 String data = response.body().string();
                 Log.d(TAG, "onResponse: "+data);
@@ -646,7 +646,7 @@ public class StepService extends Service implements SensorEventListener {
         @Override
         protected void onPostExecute(Boolean result) {
             if (!result){
-                Toast.makeText(getApplicationContext(), "保存数据失败", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "保存数据失败", Toast.LENGTH_SHORT).show();
             }
         }
     }
