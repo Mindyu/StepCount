@@ -20,12 +20,20 @@ public class SharedPreferencesUtils {
     }
 
     /**
-     * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
+     * 存储数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
+     *
      * @param key
      * @param object
      */
     public void setParam(String key, Object object) {
+        //获得当前对象的类型，返回源代码中给出的底层类的简称
         String type = object.getClass().getSimpleName();
+
+        /*指定SharePreferences文件的名称和操作模式
+         * 调用SharePreferences对象的edit()方法获取SharePreferences.Editor对象
+         * 向SharePreferences.Editor对象中添加数据
+         * 调用apply()方法将添加的数据提交，从而完成数据存储
+         * */
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_MULTI_PROCESS);
         SharedPreferences.Editor editor = sp.edit();
@@ -44,13 +52,14 @@ public class SharedPreferencesUtils {
     }
 
     /**
-     * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
+     * 得到存储数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对应的方法读取数据
      *
      * @param key
      * @param defaultObject
      * @return
      */
     public Object getParam(String key, Object defaultObject) {
+        //获得当前对象的类型，返回源代码中给出的底层类的简称
         String type = defaultObject.getClass().getSimpleName();
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
@@ -69,11 +78,10 @@ public class SharedPreferencesUtils {
     }
 
     /**
-     * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
-     *
      * @param key
      * @return
      */
+
     // Delete
     public void remove(String key) {
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,

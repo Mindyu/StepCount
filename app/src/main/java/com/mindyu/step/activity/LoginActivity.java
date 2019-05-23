@@ -2,7 +2,6 @@ package com.mindyu.step.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +20,6 @@ import com.mindyu.step.parameter.SystemParameter;
 import com.mindyu.step.user.bean.Result;
 import com.mindyu.step.user.bean.User;
 import com.mindyu.step.util.SharedPreferencesUtils;
-import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
 import java.io.IOException;
 
@@ -36,7 +34,7 @@ public class LoginActivity extends SwipeBackActivity {
     private static final int REQUEST_SIGNUP = 1;
     private UserLoginTask mAuthTask = null;
 
-    private EditText email_edit;
+    private EditText name_edit;
     private EditText password_edit;
     private CheckBox cbRememberPass;
     private CheckBox autologin;
@@ -44,7 +42,7 @@ public class LoginActivity extends SwipeBackActivity {
     private Button signBtn;
     private ProgressDialog progressDialog;
     private TextView signup_tv;
-    // private CommonTitleBar topbar;
+
 
     @Override
     protected boolean isSwipeBackEnable() {
@@ -62,14 +60,12 @@ public class LoginActivity extends SwipeBackActivity {
     }
 
     private void initViews() {
-        email_edit = findViewById(R.id.email);
-        password_edit = findViewById(R.id.password);
+        name_edit = findViewById(R.id.name_et);
+        password_edit = findViewById(R.id.password_et);
         cbRememberPass = findViewById(R.id.cbRememberPass);
         autologin = findViewById(R.id.autologin);
         signBtn = findViewById(R.id.sign_in_button);
         signup_tv = findViewById(R.id.link_signup);
-        //topbar = findViewById(R.id.topbar);
-        //topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
 
     private void initEvent() {
@@ -85,21 +81,14 @@ public class LoginActivity extends SwipeBackActivity {
                 // Start the Signup activity
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
-                // startActivity(intent);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                // Activity切换
+                overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
             }
         });
-        /*topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
-            @Override
-            public void onClicked(View v, int action, String extra) {
-                if (action == CommonTitleBar.ACTION_RIGHT_BUTTON) {
-                    Toast.makeText(LoginActivity.this, "搜索", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
     }
 
     private void initText() {
+        //从SharedPreferencesZ中读取用户信息
         sp = new SharedPreferencesUtils(this);
         String name = sp.getParam("user_name", "").toString();
         String pass = sp.getParam("password", "").toString();
@@ -108,7 +97,8 @@ public class LoginActivity extends SwipeBackActivity {
         boolean choseAutoLogin = (boolean) sp.getParam("auto_login", false);
         boolean directLogin = (boolean) sp.getParam("direct_login", false);
 
-        email_edit.setText(name);
+        //将用户名和密码设置到文本框中
+        name_edit.setText(name);
         //如果上次选了记住密码，那进入登录页面也自动勾选记住密码，并填上用户名和密码
         if (choseRemember) {
             password_edit.setText(pass);
@@ -118,6 +108,7 @@ public class LoginActivity extends SwipeBackActivity {
             if (choseAutoLogin) {
                 autologin.setChecked(true);
                 if (directLogin)
+                    // callOnClick 不用用户手动点击直接触发view的点击事件
                     signBtn.callOnClick();
             }
         }
@@ -129,7 +120,7 @@ public class LoginActivity extends SwipeBackActivity {
             if (resultCode == RESULT_OK) {
                 String username = data.getStringExtra("username");
                 String password = data.getStringExtra("password");
-                email_edit.setText(username);
+                name_edit.setText(username);
                 password_edit.setText(password);
             }
         }
@@ -144,13 +135,14 @@ public class LoginActivity extends SwipeBackActivity {
         }
         signBtn.setEnabled(false);
 
+        //验证信息时弹出对话框
         progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = email_edit.getText().toString();
+        String email = name_edit.getText().toString();
         String password = password_edit.getText().toString();
 
         mAuthTask = new UserLoginTask(email, password);
@@ -168,29 +160,29 @@ public class LoginActivity extends SwipeBackActivity {
     }
 
     public boolean validate() {
-        boolean valid = true;
 
-        String username = email_edit.getText().toString();
+        String username = name_edit.getText().toString();
         String password = password_edit.getText().toString();
 
-        if (username.isEmpty()) {
-            email_edit.setError("enter a valid username");
-            valid = false;
+        if (username.isEmpty() || username.length() < 4) {
+            name_edit.setError("enter a valid username");
+            return false;
         } else {
-            email_edit.setError(null);
+            name_edit.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            email_edit.setError("between 4 and 10 alphanumeric characters");
-            valid = false;
+            password_edit.setError("between 4 and 10 alphanumeric characters");
+            return false;
         } else {
-            email_edit.setError(null);
+            password_edit.setError(null);
         }
 
-        return valid;
+        return true;
     }
 
-    // 用户登录的异步任务
+    // 用户登录的异步任务，自定义UserLoginTask
+    /**/
     public class UserLoginTask extends AsyncTask<Void, Void, Result<User>> {
 
         private final String mName;
@@ -202,13 +194,11 @@ public class LoginActivity extends SwipeBackActivity {
             mPassword = password;
         }
 
+        //重写doInBackground方法，处理所有的耗时任务
         @Override
         protected Result<User> doInBackground(Void... params) {
 
-//            UserDao userDao = UserDao.getInstance();
-//            Result result = userDao.login(mName, mPassword);
-//            errorMassage = result.getMessage();
-
+            //创建一个OkHttpClient实例
             OkHttpClient httpclient = new OkHttpClient();
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -219,15 +209,16 @@ public class LoginActivity extends SwipeBackActivity {
             //将对象转换为诶JSON格式字符串
             String jsonStr = gson.toJson(user);
             RequestBody body = RequestBody.create(JSON, jsonStr);
+            //创建request对象
             Request request = new Request.Builder()
                     .url(SystemParameter.ip + "/user/login")
                     .post(body)
                     .build();
             try {
                 Log.d("Request:", request.toString());
+                //发送请求并获取服务器返回的数据
                 Response response = httpclient.newCall(request).execute();
                 String data = response.body().string();
-
                 Log.d("Response:", data);
                 return parseJSonWithGSON(data);
             } catch (IOException e) {
@@ -236,12 +227,15 @@ public class LoginActivity extends SwipeBackActivity {
             return null;
         }
 
+
+        //利用GSON开源库解析JSON数据
         private Result<User> parseJSonWithGSON(final String data) {
             Gson gson = new Gson();
             Result<User> result = gson.fromJson(data, new TypeToken<Result<User>>() {
             }.getType());
             return result;
         }
+
 
         @Override
         protected void onPostExecute(final Result<User> result) {
@@ -261,11 +255,14 @@ public class LoginActivity extends SwipeBackActivity {
                     sp.setParam("direct_login", true);
 
                 SystemParameter.user = result.getData();
+
+                //传递字符串到MainActivity
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("username", mName);
                 intent.putExtras(bundle);
                 startActivity(intent);
+
                 LoginActivity.this.finish();    // 登录成功之后不能回退
             } else {
                 password_edit.setError(result == null ? "登录异常" : result.getMessage());

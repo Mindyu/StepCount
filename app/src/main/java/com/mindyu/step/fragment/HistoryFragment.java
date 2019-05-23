@@ -135,13 +135,13 @@ public class HistoryFragment extends Fragment {
         List<StepCountData> stepCountData = LitePal.order("today desc").find(StepCountData.class);
         Logger.d("stepDatas=" + stepCountData);
 
-        commonAdapter = new CommonAdapter<StepCountData>(this.getContext(), stepCountData, R.layout.item) {
+        commonAdapter = new CommonAdapter<StepCountData>(this.getContext(), stepCountData, R.layout.item_history) {
             @Override
             protected void convertView(View item, StepCountData stepCountData) {
-                TextView tv_date = CommonViewHolder.get(item, R.id.tv_date);
-                TextView tv_step = CommonViewHolder.get(item, R.id.tv_step);
+                TextView tv_date = CommonViewHolder.get(item, R.id.movement_total_steps_time_tv);
+                TextView tv_step = CommonViewHolder.get(item, R.id.movement_total_steps_tv);
                 tv_date.setText(stepCountData.getToday());
-                tv_step.setText(stepCountData.getStep() + "步");
+                tv_step.setText(""+stepCountData.getStep());
             }
         };
         history_lv.setAdapter(commonAdapter);
@@ -170,15 +170,15 @@ public class HistoryFragment extends Fragment {
         if (SystemParameter.user != null)
             new UserStepCountTask().execute(SystemParameter.user.getId());
 
-        commonAdapter = new CommonAdapter<StepCount>(this.getContext(), new ArrayList<StepCount>(), R.layout.item) {
+        commonAdapter = new CommonAdapter<StepCount>(this.getContext(), new ArrayList<StepCount>(), R.layout.item_history) {
             @Override
             protected void convertView(View item, StepCount stepCount) {
-                TextView tv_date = CommonViewHolder.get(item, R.id.tv_date);
-                TextView tv_step = CommonViewHolder.get(item, R.id.tv_step);
+                TextView tv_date = CommonViewHolder.get(item, R.id.movement_total_steps_time_tv);
+                TextView tv_step = CommonViewHolder.get(item, R.id.movement_total_steps_tv);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String date = sdf.format(stepCount.getDate());
                 tv_date.setText(date);
-                tv_step.setText(stepCount.getStepCount() + "步");
+                tv_step.setText(""+stepCount.getStepCount());
             }
         };
         history_lv.setAdapter(commonAdapter);

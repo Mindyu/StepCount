@@ -3,7 +3,6 @@ package com.mindyu.step.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 
 import com.hjm.bottomtabbar.BottomTabBar;
 import com.mindyu.step.R;

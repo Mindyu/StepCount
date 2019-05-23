@@ -28,7 +28,7 @@
             android:layout_marginBottom="8dp">
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/name_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -44,7 +44,7 @@
             android:layout_marginBottom="8dp">
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/password_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -58,6 +58,7 @@
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:orientation="horizontal">
 
+            <!-- CheckBox 复选框控件-->
             <CheckBox
                 android:id="@+id/cbRememberPass"
                 android:layout_width="wrap_content"

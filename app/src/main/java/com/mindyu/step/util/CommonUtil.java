@@ -14,4 +14,9 @@ public class CommonUtil {
         return width;
     }
 
+    public static String formatFloat(double value){
+        java.text.DecimalFormat df = new java.text.DecimalFormat("#.##");
+        return df.format(value);
+    }
+
 }

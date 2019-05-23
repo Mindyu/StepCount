@@ -5,8 +5,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 /**
+ * 使用listview时，通过ViewHolder进行缓存提高性能
  * 万能的ViewHolder
- *
  * @author
  */
 public class CommonViewHolder {
@@ -21,13 +21,13 @@ public class CommonViewHolder {
         //如果根view没有用来缓存View的集合
         if (viewHolder == null) {
             viewHolder = new SparseArray<View>();
-            view.setTag(viewHolder);//创建集合和根View关联
+            view.setTag(viewHolder);                //创建集合和根View关联
         }
-        View chidlView = viewHolder.get(id);//获取根View储存在集合中的孩纸
-        if (chidlView == null) {//如果没有改孩纸
+        View chidlView = viewHolder.get(id);        //获取根View储存在集合中的孩纸
+        if (chidlView == null) {                    //如果没有改孩纸
             //找到该孩纸
             chidlView = view.findViewById(id);
-            viewHolder.put(id, chidlView);//保存到集合
+            viewHolder.put(id, chidlView);          //保存到集合
         }
         return (T) chidlView;
     }

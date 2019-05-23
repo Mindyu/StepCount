@@ -27,30 +27,33 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.orhanobut:logger:1.8'
-    implementation 'com.hjm:BottomTabBar:1.2.2'
     // 底部导航栏
-    implementation 'com.makeramen:roundedimageview:2.2.1'
+    implementation 'com.hjm:BottomTabBar:1.2.2'
     // 圆形头像
+    implementation 'com.makeramen:roundedimageview:2.2.1'
+    //引入LitePal
     implementation 'org.litepal.android:core:2.0.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'jp.wasabeef:glide-transformations:2.0.1'
+    //okhttp库
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.google.code.gson:gson:2.8.2'
     // json解析
+    implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    // image-loader
+    // 轮播依赖
     implementation 'com.youth.banner:banner:1.4.10'
+    // Glide框架
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
     // 导航栏动画
     implementation 'io.reactivex:rxjava:1.0.14'
     // rxJava
     implementation 'io.reactivex:rxandroid:1.0.1'
+    implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.shizhefei:LargeImageView:1.1.0'
-    implementation 'com.wuhenzhizao:titlebar:1.1.4'
     // 自定义标题栏
-    implementation 'com.jude:swipebackhelper:2.1.5'
+    implementation 'com.wuhenzhizao:titlebar:1.1.4'
     // 滑动管理类
+    implementation 'com.jude:swipebackhelper:2.1.5'
     implementation files('libs/achartengine-1.1.0.jar')
 }
