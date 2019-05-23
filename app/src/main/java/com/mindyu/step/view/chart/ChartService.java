@@ -50,9 +50,9 @@ public class ChartService {
      * @param curveTitle
      */
     public void setXYMultipleSeriesDataset(String curveTitle) {
-        multipleSeriesDataset = new XYMultipleSeriesDataset();
-        mSeries = new TimeSeries(curveTitle);
-        multipleSeriesDataset.addSeries(mSeries);
+        multipleSeriesDataset = new XYMultipleSeriesDataset();   //创建图表数据集
+        mSeries = new TimeSeries(curveTitle);                    //带日期的单条曲线数据
+        multipleSeriesDataset.addSeries(mSeries);                //将单条曲线数据设置给曲线数据集
     }
 
     /**
@@ -65,33 +65,31 @@ public class ChartService {
      */
     public void setXYMultipleSeriesRenderer(String chartTitle, String xTitle, String yTitle, int axeColor,
                                             int curveColor) {
-        multipleSeriesRenderer = new XYMultipleSeriesRenderer();
-        multipleSeriesRenderer.setChartTitle(chartTitle);
-        multipleSeriesRenderer.setChartTitleTextSize(50);
-        multipleSeriesRenderer.setXTitle(xTitle);
-        multipleSeriesRenderer.setYTitle(yTitle);
-        // multipleSeriesRenderer.setRange(new double[] { 0, maxX, 0, maxY });//xy轴的范围
-        multipleSeriesRenderer.setXLabels(0);
-        multipleSeriesRenderer.setYLabels(10);
-        multipleSeriesRenderer.setXLabelsAlign(Paint.Align.CENTER);
-        multipleSeriesRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-        multipleSeriesRenderer.setAntialiasing(true);
-        multipleSeriesRenderer.setAxisTitleTextSize(30);
-        multipleSeriesRenderer.setLabelsTextSize(30);
-        multipleSeriesRenderer.setLegendTextSize(30);
-        multipleSeriesRenderer.setPointSize(5f);        // 曲线描点尺寸
-        multipleSeriesRenderer.setFitLegend(true);      // 适应屏幕
-        multipleSeriesRenderer.setMargins(new int[]{50, 105, 40, 30}); // 上左下右
-        multipleSeriesRenderer.setShowGrid(false);
-        multipleSeriesRenderer.setZoomEnabled(true, true);
-        multipleSeriesRenderer.setAxesColor(axeColor);
-        multipleSeriesRenderer.setBackgroundColor(Color.WHITE); // 背景色
-        multipleSeriesRenderer.setMarginsColor(Color.WHITE);    // 边距背景色，默认背景色为黑色，这里修改为白色
+        multipleSeriesRenderer = new XYMultipleSeriesRenderer();            // 创建曲线图图表渲染器
+        multipleSeriesRenderer.setChartTitle(chartTitle);                   // 设置曲线标题
+        multipleSeriesRenderer.setChartTitleTextSize(50);                   // 设置曲线标题文字大小
+        multipleSeriesRenderer.setXTitle(xTitle);                           // 设置X轴标题
+        multipleSeriesRenderer.setYTitle(yTitle);                           // 设置Y轴标题
+        multipleSeriesRenderer.setXLabels(0);                               // 设置X轴上的标签数量
+        multipleSeriesRenderer.setYLabels(10);                              // 设置Y轴上的标签数量
+        multipleSeriesRenderer.setXLabelsAlign(Paint.Align.CENTER);         // 设置X轴标签的对齐方式
+        multipleSeriesRenderer.setYLabelsAlign(Paint.Align.RIGHT);          // 设置Y轴标签的对齐方式
+        multipleSeriesRenderer.setAntialiasing(true);                       // 消除锯齿
+        multipleSeriesRenderer.setAxisTitleTextSize(30);                    // 设置坐标轴标题文本大小
+        multipleSeriesRenderer.setLabelsTextSize(30);                       // 设置轴标签文本大小
+        multipleSeriesRenderer.setLegendTextSize(30);                       // 设置左下角表注文本大小
+        multipleSeriesRenderer.setPointSize(5f);                            // 曲线描点尺寸
+        multipleSeriesRenderer.setFitLegend(true);                          // 适应屏幕
+        multipleSeriesRenderer.setMargins(new int[]{50, 105, 40, 30});      // 上左下右
+        multipleSeriesRenderer.setShowGrid(false);                          // 是否显示网格线
+        multipleSeriesRenderer.setZoomEnabled(true, true);// 确定可以缩放的坐标轴
+        multipleSeriesRenderer.setAxesColor(axeColor);                      // 设置坐标轴的颜色
+        multipleSeriesRenderer.setBackgroundColor(Color.WHITE);             // 背景色
+        multipleSeriesRenderer.setMarginsColor(Color.WHITE);                // 边距背景色，默认背景色为黑色，这里修改为白色
         mRenderer = new XYSeriesRenderer();
         mRenderer.setColor(curveColor);
         mRenderer.setLineWidth(4);
-        // mRenderer.setDisplayChartValues(true);
-        mRenderer.setPointStyle(PointStyle.TRIANGLE);             // 描点风格，可以为圆点，方形点等等
+        mRenderer.setPointStyle(PointStyle.TRIANGLE);                       //描点风格，可以为圆点，方形点等等
         multipleSeriesRenderer.addSeriesRenderer(mRenderer);
     }
 

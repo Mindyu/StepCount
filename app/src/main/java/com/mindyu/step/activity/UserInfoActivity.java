@@ -74,6 +74,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/*用户个人信息*/
 public class UserInfoActivity extends SwipeBackActivity implements View.OnClickListener {
 
     private final static String TAG = "UserInfoActivity";

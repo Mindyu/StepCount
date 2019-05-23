@@ -21,7 +21,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //全屏
+        //全屏显示
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_welcome);
 
@@ -36,8 +36,6 @@ public class WelcomeActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.mRecyclerView);
         mRecyclerView.setAdapter(new SplashAdapter(WelcomeActivity.this));
         mRecyclerView.setLayoutManager(new ScollLinearLayoutManager(WelcomeActivity.this));
-
-        //smoothScrollToPosition滚动到某个位置（有滚动效果）
         mRecyclerView.smoothScrollToPosition(Integer.MAX_VALUE / 2);
     }
 }

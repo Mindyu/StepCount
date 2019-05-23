@@ -48,7 +48,7 @@ public class DateTimePickerUtil {
     public static void showDateDialog(final Context context, final TextView textView, String dateStr) {
         final Calendar calendar = Calendar.getInstance(Locale.CHINA);
         int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH+1);
+        int month = calendar.get(Calendar.MONTH)+1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         if (dateStr!=null && !"".equals(dateStr.trim())){
             String[] str = dateStr.split("-");

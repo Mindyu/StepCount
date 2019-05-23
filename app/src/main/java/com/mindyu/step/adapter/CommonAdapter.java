@@ -17,6 +17,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
     private List<T> datas;
     private int layoutId;
 
+    //构造函数
     public CommonAdapter(Context context, List<T> datas, int layoutId) {
         this.context = context;
         this.datas = datas;
@@ -51,7 +52,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(layoutId, null);
         }
-        T t = getItem(position);
+        T t = getItem(position);      //获取当前项的实例
         convertView(convertView, t);
         return convertView;
     }

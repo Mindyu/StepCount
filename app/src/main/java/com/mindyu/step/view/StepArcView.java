@@ -68,7 +68,6 @@ public class StepArcView extends View {
         float centerX = (getWidth()) / 2;
         /**指定圆弧的外轮廓矩形区域*/
         RectF rectF = new RectF(0 + borderWidth, borderWidth, 2 * centerX - borderWidth, 2 * centerX - borderWidth);
-
         /**  绘制整体的黄色圆弧  */
         drawArcYellow(canvas, rectF);
         /**  绘制当前进度的红色圆弧  */
@@ -117,12 +116,12 @@ public class StepArcView extends View {
      */
     private void drawArcRed(Canvas canvas, RectF rectF) {
         Paint paintCurrent = new Paint();
-        paintCurrent.setStrokeJoin(Paint.Join.ROUND);
-        paintCurrent.setStrokeCap(Paint.Cap.ROUND);//圆角弧度
-        paintCurrent.setStyle(Paint.Style.STROKE);//设置填充样式
-        paintCurrent.setAntiAlias(true);//抗锯齿功能
-        paintCurrent.setStrokeWidth(borderWidth);//设置画笔宽度
-        paintCurrent.setColor(getResources().getColor(R.color.red));//设置画笔颜色
+        paintCurrent.setStrokeJoin(Paint.Join.ROUND);                   //结合处为圆弧
+        paintCurrent.setStrokeCap(Paint.Cap.ROUND);                     //画笔的样式
+        paintCurrent.setStyle(Paint.Style.STROKE);                      //设置填充样式
+        paintCurrent.setAntiAlias(true);                                //抗锯齿功能
+        paintCurrent.setStrokeWidth(borderWidth);                       //设置画笔宽度
+        paintCurrent.setColor(getResources().getColor(R.color.red));    //设置画笔颜色
         canvas.drawArc(rectF, startAngle, currentAngleLength, false, paintCurrent);
     }
 
@@ -151,7 +150,7 @@ public class StepArcView extends View {
         vTextPaint.setTextSize(dipToPx(16));
         vTextPaint.setTextAlign(Paint.Align.CENTER);
         vTextPaint.setAntiAlias(true);//抗锯齿功能
-        vTextPaint.setColor(getResources().getColor(R.color.grey));
+        vTextPaint.setColor(getResources().getColor(R.color.black));
         String stepString = "步数";
         Rect bounds = new Rect();
         vTextPaint.getTextBounds(stepString, 0, stepString.length(), bounds);
@@ -191,7 +190,7 @@ public class StepArcView extends View {
      * @param currentCounts 所走步数
      */
     public void setCurrentCount(int totalStepNum, int currentCounts) {
-        /**如果当前走的步数超过总步数则圆弧还是270度，不能成为园*/
+        /**如果当前走的步数超过总步数则圆弧还是270度，不能成为圆*/
         if (currentCounts > totalStepNum) {
             currentCounts = totalStepNum;
         }
@@ -225,17 +224,23 @@ public class StepArcView extends View {
      * @param length  动画时长
      */
     private void setAnimation(float start, float current, int length) {
+        /* 调用ofFloat()方法创建ValueAnimator对象 */
         ValueAnimator progressAnimator = ValueAnimator.ofFloat(start, current);
-        progressAnimator.setDuration(length);
-        progressAnimator.setTarget(currentAngleLength);
+        /* 为目标对象的属性变化设置监听器 */
         progressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                /**每次在初始值和结束值之间产生的一个平滑过渡的值，逐步去更新进度*/
+                /**
+                 * 为目标对象的属性设置计算好的属性值
+                 * 每次在初始值和结束值之间产生的一个平滑过渡的值，逐步去更新进度*/
                 currentAngleLength = (float) animation.getAnimatedValue();
                 invalidate();
             }
         });
+        /* 设置动画的持续时间 */
+        progressAnimator.setDuration(length);
+        /* 为ValueAnimator设置目标对象并开始执行动画 */
+        progressAnimator.setTarget(currentAngleLength);
         progressAnimator.start();
     }
 

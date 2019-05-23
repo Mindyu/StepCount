@@ -92,39 +92,39 @@ public class HotTopicFragment extends Fragment {
 
     class News implements Comparable {
         String title;
-        String source;
+        String time;
+        String src;
         String category;
-        String ptime;
-        String pic_url;
-        String link;
+        String pic;
+        String weburl;
 
 
         @Override
         public String toString() {
             return "News{" +
                     "title='" + title + '\'' +
-                    ", source='" + source + '\'' +
+                    ", time='" + time + '\'' +
+                    ", src='" + src + '\'' +
                     ", category='" + category + '\'' +
-                    ", ptime='" + ptime + '\'' +
-                    ", pic_url='" + pic_url + '\'' +
-                    ", link='" + link + '\'' +
+                    ", pic='" + pic + '\'' +
+                    ", weburl='" + weburl + '\'' +
                     '}';
         }
 
         @Override
         public int compareTo(@NonNull Object o) {
-            return ((News) o).ptime.compareTo(ptime);
+            return ((News) o).time.compareTo(time);
         }
     }
 
     private void initData() {
         setEmptyView(news_lv);
 
-        List<News> result;
+        List<News> result = new ArrayList<>();
         // 先从本地缓存中获取
         sp = new SharedPreferencesUtils(getContext());
         String data = sp.getParam("newsList", "").toString();
-        result = parseComplexJsonStr(data);
+        result = parseComplexJsonFromJisuStr(data);
 
         // 异步获取新闻信息
         new NewsTask().execute();
@@ -137,9 +137,9 @@ public class HotTopicFragment extends Fragment {
                 TextView category_tv = CommonViewHolder.get(item, R.id.category_tv);
                 TextView publish_date_tv = CommonViewHolder.get(item, R.id.publish_date_tv);
                 title_tv.setText(news.title);
-                source_tv.setText(news.source);
+                source_tv.setText(news.src);
                 category_tv.setText(news.category);
-                publish_date_tv.setText(news.ptime);
+                publish_date_tv.setText(news.time);
                 title_tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -147,7 +147,7 @@ public class HotTopicFragment extends Fragment {
                         // Toast.makeText(getContext(), news.link, Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getActivity(), WebViewActicity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putString("url", news.link);
+                        bundle.putString("url", news.weburl);
                         intent.putExtras(bundle);
                         startActivity(intent);
                     }
@@ -187,13 +187,14 @@ public class HotTopicFragment extends Fragment {
             OkHttpClient okHttpClient = new OkHttpClient();
 
             Request request = new Request.Builder()
-                    .url("https://www.apiopen.top/journalismApi")
+                    // .url("https://www.apiopen.top/journalismApi")
+                    .url("https://api.jisuapi.com/news/get?channel=%E5%81%A5%E5%BA%B7&start=0&num=20&appkey=f3593fb14811078e")
                     .build();
             Call call = okHttpClient.newCall(request);
             try {
                 Response response = call.execute();
                 if (response.body() == null) {
-                    Log.d(TAG, "onResponse: 获取用户步数信息失败");
+                    Log.d(TAG, "onResponse: 获取新闻数据失败");
                     return null;
                 }
                 String data = response.body().string();
@@ -204,7 +205,7 @@ public class HotTopicFragment extends Fragment {
                     sp.setParam("newsList", data);
                 }
 
-                List<News> result = parseComplexJsonStr(data);
+                List<News> result = parseComplexJsonFromJisuStr(data);
                 if (result != null) {
                     return result;
                 }
@@ -222,7 +223,7 @@ public class HotTopicFragment extends Fragment {
                 return;
             }
             List<News> origin = commonAdapter.getDatas();
-            if (origin != null && origin.size() == result.size() && origin.size() > 0 && origin.get(0).ptime.equals(result.get(0).ptime)) {
+            if (origin != null && origin.size() == result.size() && origin.size() > 0 && origin.get(0).time.equals(result.get(0).time)) {
                 Log.d(TAG, "onPostExecute: 无新记录");
                 return;
             }
@@ -231,14 +232,14 @@ public class HotTopicFragment extends Fragment {
         }
     }
 
-    private List<News> parseComplexJsonStr(String jsonStr) {
+    /*private List<News> parseComplexJsonStr(String jsonStr) {
         List<News> newsList = new ArrayList<News>();
         if (jsonStr == null || "".equals(jsonStr))
             return newsList;
         //最外层
         JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
         //需要遍历的数组
-        jsonObject = jsonObject.getAsJsonObject("data");
+        jsonObject = jsonObject.getAsJsonObject("result");
         if (jsonObject == null) return newsList;
         String[] classify = {"tech", "auto", "money", "sports", "toutiao", "dy", "war", "ent"};
         for (String str : classify) {
@@ -255,6 +256,29 @@ public class HotTopicFragment extends Fragment {
                 newsList.add(news);
             }
         }
+        Collections.sort(newsList);     // 按照发布时间倒排
+        return newsList;
+    }*/
+
+
+    private List<News> parseComplexJsonFromJisuStr(String jsonStr) {
+        List<News> newsList = new ArrayList<News>();
+        if (jsonStr == null || "".equals(jsonStr))
+            return newsList;
+
+        //拿到最外层对象
+        JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
+        jsonObject = jsonObject.getAsJsonObject("result");
+
+        //需要遍历的数组
+        JsonArray jsonArray = jsonObject.getAsJsonArray("list");
+        for (JsonElement info : jsonArray) {
+            News news = new Gson().fromJson(info, new TypeToken<News>() {
+            }.getType());
+            if (news.title == null) continue;
+            newsList.add(news);
+        }
+
         Collections.sort(newsList);     // 按照发布时间倒排
         return newsList;
     }

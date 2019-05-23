@@ -3,7 +3,6 @@ package com.mindyu.step.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -68,7 +67,7 @@ public class SignupActivity extends SwipeBackActivity {
                 Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
             }
         });
     }
@@ -119,8 +118,8 @@ public class SignupActivity extends SwipeBackActivity {
         String password = password_edit.getText().toString();
         String reEnterPassword = re_password_edit.getText().toString();
 
-        if (username.isEmpty() || username.length() < 3) {
-            email_edit.setError("at least 3 characters");
+        if (username.isEmpty() || username.length() < 4) {
+            email_edit.setError("at least 4 characters");
             valid = false;
         } else {
             email_edit.setError(null);

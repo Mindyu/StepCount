@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.mindyu.step.R;
 
+/* 自定义控件 */
 public class Topbar extends RelativeLayout {
 
     //自定义控件中的组件

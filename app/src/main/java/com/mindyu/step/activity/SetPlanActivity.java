@@ -46,12 +46,12 @@ public class SetPlanActivity extends SwipeBackActivity implements View.OnClickLi
 
     public void initData() {//获取锻炼计划
         sp = new SharedPreferencesUtils(this);
-        String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
+        String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
         String remind = (String) sp.getParam("remind", "1");
         String achieveTime = (String) sp.getParam("achieveTime", "20:00");
         if (!planWalk_QTY.isEmpty()) {
             if ("0".equals(planWalk_QTY)) {
-                tv_step_number.setText("7000");
+                tv_step_number.setText("10000");
             } else {
                 tv_step_number.setText(planWalk_QTY);
             }
@@ -90,7 +90,6 @@ public class SetPlanActivity extends SwipeBackActivity implements View.OnClickLi
 
     private void save() {
         walk_qty = tv_step_number.getText().toString().trim();
-//        remind = "";
         if (cb_remind.isChecked()) {
             remind = "1";
         } else {
@@ -98,7 +97,7 @@ public class SetPlanActivity extends SwipeBackActivity implements View.OnClickLi
         }
         achieveTime = tv_remind_time.getText().toString().trim();
         if (walk_qty.isEmpty() || "0".equals(walk_qty)) {
-            sp.setParam("planWalk_QTY", "7000");
+            sp.setParam("planWalk_QTY", "10000");
         } else {
             sp.setParam("planWalk_QTY", walk_qty);
         }

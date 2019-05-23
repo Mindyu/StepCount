@@ -6,7 +6,8 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar
+        xmlns:titlebar="http://schemas.android.com/apk/res-auto"
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="每日锻炼步数"
+                android:text="每日步数"
                 android:textColor="#000000"
                 android:textSize="18sp" />
 
@@ -57,7 +58,7 @@
                 android:layout_weight="1"
                 android:background="#ffffff"
                 android:gravity="center_vertical|right"
-                android:text="7000"
+                android:text="10000"
                 android:textColor="#000000"
                 android:textSize="18sp" />
         </LinearLayout>

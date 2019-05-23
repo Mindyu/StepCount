@@ -22,17 +22,14 @@ public class ScollLinearLayoutManager extends LinearLayoutManager {
 
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-        LinearSmoothScroller linearSmoothScroller =
-                new LinearSmoothScroller(recyclerView.getContext()) {
+        LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
                     @Override
                     public PointF computeScrollVectorForPosition(int targetPosition) {
-                        return ScollLinearLayoutManager.this
-                                .computeScrollVectorForPosition(targetPosition);
+                        return ScollLinearLayoutManager.this.computeScrollVectorForPosition(targetPosition);
                     }
 
                     @Override
-                    protected float calculateSpeedPerPixel
-                            (DisplayMetrics displayMetrics) {
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
                         return MILLISECONDS_PER_INCH / displayMetrics.density;
                         //返回滑动一个pixel需要多少毫秒
                     }

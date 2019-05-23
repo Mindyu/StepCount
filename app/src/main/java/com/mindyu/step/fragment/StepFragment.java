@@ -34,6 +34,8 @@ public class StepFragment extends Fragment implements View.OnClickListener {
     private StepArcView cc;
     private TextView tv_set;
     private TextView tv_isSupport;
+    private TextView tv_distance;
+    private TextView tv_calorie;
     private SharedPreferencesUtils sp;
     private Integer[] images={R.mipmap.img_0,R.mipmap.img_1,R.mipmap.img_2,R.mipmap.img_3,R.mipmap.img_4,R.mipmap.img_5};
 
@@ -44,8 +46,10 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         cc = view.findViewById(R.id.cc);
         tv_set = view.findViewById(R.id.tv_set);
         tv_isSupport = view.findViewById(R.id.tv_isSupport);
+        tv_distance = view.findViewById(R.id.movement_total_distance_tv);
+        tv_calorie = view.findViewById(R.id.movement_total_calorie_tv);
         Banner banner = view.findViewById(R.id.banner);
-        //设置banner样式
+        //设置banner样式，显示圆形指示器
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
         //设置图片加载器
         banner.setImageLoader(new GlideImageLoader());
@@ -53,9 +57,6 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         banner.setImages(Arrays.asList(images));
         //设置banner动画效果
         banner.setBannerAnimation(Transformer.DepthPage);
-        //设置标题集合（当banner样式有显示title时）
-        //String[] titles = {"1", "2", "3"};
-        //banner.setBannerTitles(Arrays.asList(titles));
         //设置自动轮播，默认为true
         banner.isAutoPlay(true);
         //设置轮播时间
@@ -94,6 +95,8 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
         //设置当前步数为0
         cc.setCurrentCount(Integer.parseInt(planWalk_QTY), 0);
+        tv_distance.setText("0");
+        tv_calorie.setText("0");
         tv_isSupport.setText("计步中...");
         setupService();
     }
@@ -108,6 +111,7 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         Intent intent = new Intent(this.getContext(), StepService.class);
         isBind = getContext().bindService(intent, conn, Context.BIND_AUTO_CREATE);
         getContext().startService(intent);
+
     }
 
     /**
@@ -125,15 +129,19 @@ public class StepFragment extends Fragment implements View.OnClickListener {
         public void onServiceConnected(ComponentName name, IBinder service) {
             StepService stepService = ((StepService.StepBinder) service).getService();
             //设置初始化数据
-            String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
+            String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
             cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepService.getStepCount());
+            tv_distance.setText(String.valueOf(stepService.getStepCount()*0.7));
+            tv_calorie.setText(String.valueOf(stepService.getStepCount()*0.0235));
 
             //设置步数监听回调
             stepService.registerCallback(new UpdateUiCallBack() {
                 @Override
                 public void updateUi(int stepCount) {
-                    String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
+                    String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
                     cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepCount);
+                    tv_distance.setText(String.valueOf(stepCount*0.7/1000));
+                    tv_calorie.setText(String.valueOf(stepCount*0.0235));
                 }
             });
         }

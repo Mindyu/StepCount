@@ -2,6 +2,7 @@ package com.mindyu.step.step.service;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -69,7 +71,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     private BroadcastReceiver mBatInfoReceiver;
     /**
-     * 保存记步计时器
+     * 保存计步计时器
      */
     private TimeCount time;
     /**
@@ -290,7 +292,7 @@ public class StepService extends Service implements SensorEventListener {
                 .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示
                 .setContentIntent(hangPendingIntent)
                 .build();
-        mNotificationManager.notify(notifyId_Step, notification);
+        mNotificationManager.notify(notifyId_Step, notification);//显示通知
         if (mCallback != null) {
             mCallback.updateUi(CURRENT_STEP);
         }
@@ -343,7 +345,7 @@ public class StepService extends Service implements SensorEventListener {
                 //Notification.DEFAULT_ALL  Notification.DEFAULT_SOUND 添加声音 // requires VIBRATE permission
                 .setSmallIcon(R.mipmap.logo);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mNotificationManager.notify(notify_remind_id, mBuilder.build());
+        mNotificationManager.notify(notify_remind_id, mBuilder.build());//显示通知
     }
 
     /**
