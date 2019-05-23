@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.mindyu.step.R;
 import com.mindyu.step.activity.MainActivity;
@@ -110,11 +111,11 @@ public class StepService extends Service implements SensorEventListener {
      * 通知构建者
      */
     private NotificationCompat.Builder mBuilder;
+    private final String NOTIFICATION_CHANNEL_ID = "channel_id_01";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate()");
         initNotification();             // 初始化通知栏
         initTodayData();                // 初始化当天步数
         initBroadcastReceiver();        // 注册广播
@@ -128,12 +129,10 @@ public class StepService extends Service implements SensorEventListener {
 
     /**
      * 获取当天日期
-     *
-     * @return
-     */
+     **/
     private String getTodayDate() {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         return sdf.format(date);
     }
 
@@ -141,19 +140,32 @@ public class StepService extends Service implements SensorEventListener {
      * 初始化通知栏
      */
     private void initNotification() {
-        mBuilder = new NotificationCompat.Builder(this);
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_LOW);
+
+            notificationChannel.setDescription("Channel description");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         mBuilder.setContentTitle(getResources().getString(R.string.app_name))
                 .setContentText("今日步数" + CURRENT_STEP + " 步")
                 .setContentIntent(getDefalutIntent(Notification.FLAG_ONGOING_EVENT))
-                .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示
-                .setPriority(Notification.PRIORITY_DEFAULT)//设置该通知优先级
-                .setAutoCancel(false)//设置这个标志当用户单击面板就可以让通知将自动取消
-                .setOngoing(true)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
+                .setWhen(System.currentTimeMillis())        //通知产生的时间，会在通知信息里显示
+                .setPriority(Notification.PRIORITY_HIGH)    //设置该通知优先级
+                .setAutoCancel(false)   //设置这个标志当用户单击面板就可以让通知将自动取消
+                .setOngoing(true)       //ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,
+                // 用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
                 .setSmallIcon(R.mipmap.logo);
-        Notification notification = mBuilder.build();
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        startForeground(notifyId_Step, notification);
-        Log.d(TAG, "initNotification()");
+        // mNotificationManager.notify(notifyId_Step, mBuilder.build());
+        startForeground(notifyId_Step, mBuilder.build());
+        Log.d(TAG, "初始化通知栏");
     }
 
     /**
@@ -164,7 +176,7 @@ public class StepService extends Service implements SensorEventListener {
         //获取当天的数据，用于展示
         List<StepCountData> list = LitePal.where("today = ?", CURRENT_DATE).
                 find(StepCountData.class);
-        if (list.size() == 0 || list.isEmpty()) {
+        if (list.size() == 0) {
             CURRENT_STEP = 0;
         } else if (list.size() == 1) {
             Log.v(TAG, "StepData=" + list.get(0).toString());
@@ -245,7 +257,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     private void isNewDay() {
         String time = "00:00";
-        if (time.equals(new SimpleDateFormat("HH:mm").format(new Date())) || !CURRENT_DATE.equals(getTodayDate())) {
+        if (time.equals(new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date())) || !CURRENT_DATE.equals(getTodayDate())) {
             initTodayData();
         }
     }
@@ -259,10 +271,10 @@ public class StepService extends Service implements SensorEventListener {
         String plan = this.getSharedPreferences("share_date", Context.MODE_MULTI_PROCESS).getString("planWalk_QTY", "7000");
         String remind = this.getSharedPreferences("share_date", Context.MODE_MULTI_PROCESS).getString("remind", "1");
         Logger.d("time=" + time + "\n" +
-                "new SimpleDateFormat(\"HH: mm\").format(new Date()))=" + new SimpleDateFormat("HH:mm").format(new Date()));
+                "new SimpleDateFormat(\"HH: mm\").format(new Date()))=" + new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date()));
         if (("1".equals(remind)) &&
                 (CURRENT_STEP < Integer.parseInt(plan)) &&
-                (time.equals(new SimpleDateFormat("HH:mm").format(new Date())))
+                (time.equals(new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date())))
                 ) {
             remindNotify();
         }
@@ -284,7 +296,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     private void updateNotification() {
         //设置点击跳转
-        Intent hangIntent = new Intent(this, LoginActivity.class);
+        Intent hangIntent = new Intent(this, MainActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Notification notification = mBuilder.setContentTitle(getResources().getString(R.string.app_name))
@@ -296,7 +308,7 @@ public class StepService extends Service implements SensorEventListener {
         if (mCallback != null) {
             mCallback.updateUi(CURRENT_STEP);
         }
-        Log.d(TAG, "updateNotification()");
+        Log.d(TAG, "更新通知栏");
     }
 
     /**
@@ -326,13 +338,12 @@ public class StepService extends Service implements SensorEventListener {
      * 提醒锻炼通知栏
      */
     private void remindNotify() {
-
         //设置点击跳转
-        Intent hangIntent = new Intent(this, LoginActivity.class);
+        Intent hangIntent = new Intent(this, MainActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         String plan = this.getSharedPreferences("share_date", Context.MODE_MULTI_PROCESS).getString("planWalk_QTY", "7000");
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         mBuilder.setContentTitle("今日步数" + CURRENT_STEP + " 步")
                 .setContentText("距离目标还差" + (Integer.valueOf(plan) - CURRENT_STEP) + "步，加油！")
                 .setContentIntent(hangPendingIntent)
@@ -408,8 +419,7 @@ public class StepService extends Service implements SensorEventListener {
         sensorManager = (SensorManager) this
                 .getSystemService(SENSOR_SERVICE);
         //android 4.4 以后可以使用计步传感器
-        int VERSION_CODES = Build.VERSION.SDK_INT;
-        if (VERSION_CODES >= 19) {
+        if (Build.VERSION.SDK_INT >= 19) {
             addCountStepListener();
         } else {
             addBasePedometerListener();    // 通过加速度传感器来记步

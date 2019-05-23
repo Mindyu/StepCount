@@ -98,7 +98,6 @@ public class HotTopicFragment extends Fragment {
         String pic;
         String weburl;
 
-
         @Override
         public String toString() {
             return "News{" +
@@ -120,7 +119,7 @@ public class HotTopicFragment extends Fragment {
     private void initData() {
         setEmptyView(news_lv);
 
-        List<News> result = new ArrayList<>();
+        List<News> result;
         // 先从本地缓存中获取
         sp = new SharedPreferencesUtils(getContext());
         String data = sp.getParam("newsList", "").toString();
@@ -270,6 +269,8 @@ public class HotTopicFragment extends Fragment {
         JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
         jsonObject = jsonObject.getAsJsonObject("result");
 
+        if (jsonObject==null || !jsonObject.has("list"))
+            return newsList;
         //需要遍历的数组
         JsonArray jsonArray = jsonObject.getAsJsonArray("list");
         for (JsonElement info : jsonArray) {

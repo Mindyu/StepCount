@@ -18,6 +18,7 @@ import com.mindyu.step.R;
 import com.mindyu.step.activity.SetPlanActivity;
 import com.mindyu.step.step.UpdateUiCallBack;
 import com.mindyu.step.step.service.StepService;
+import com.mindyu.step.util.CommonUtil;
 import com.mindyu.step.util.SharedPreferencesUtils;
 import com.mindyu.step.view.StepArcView;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
@@ -37,7 +38,7 @@ public class StepFragment extends Fragment implements View.OnClickListener {
     private TextView tv_distance;
     private TextView tv_calorie;
     private SharedPreferencesUtils sp;
-    private Integer[] images={R.mipmap.img_0,R.mipmap.img_1,R.mipmap.img_2,R.mipmap.img_3,R.mipmap.img_4,R.mipmap.img_5};
+    private Integer[] images = {R.mipmap.img_0, R.mipmap.img_1, R.mipmap.img_2, R.mipmap.img_3, R.mipmap.img_4, R.mipmap.img_5};
 
     private CommonTitleBar topbar;
 
@@ -108,10 +109,10 @@ public class StepFragment extends Fragment implements View.OnClickListener {
      * 开启计步服务
      */
     private void setupService() {
-        Intent intent = new Intent(this.getContext(), StepService.class);
-        isBind = getContext().bindService(intent, conn, Context.BIND_AUTO_CREATE);
-        getContext().startService(intent);
-
+        Intent intent = new Intent(getActivity().getApplicationContext(), StepService.class);
+        isBind = getActivity().getApplicationContext().bindService(intent, conn, Context.BIND_AUTO_CREATE);
+//        getContext().startService(intent);
+        getActivity().getApplicationContext().startService(intent);
     }
 
     /**
@@ -131,8 +132,8 @@ public class StepFragment extends Fragment implements View.OnClickListener {
             //设置初始化数据
             String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
             cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepService.getStepCount());
-            tv_distance.setText(String.valueOf(stepService.getStepCount()*0.7));
-            tv_calorie.setText(String.valueOf(stepService.getStepCount()*0.0235));
+            tv_distance.setText(CommonUtil.formatFloat(stepService.getStepCount() * 0.7 / 1000));
+            tv_calorie.setText(CommonUtil.formatFloat(stepService.getStepCount() * 0.0235));
 
             //设置步数监听回调
             stepService.registerCallback(new UpdateUiCallBack() {
@@ -140,8 +141,8 @@ public class StepFragment extends Fragment implements View.OnClickListener {
                 public void updateUi(int stepCount) {
                     String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "10000");
                     cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepCount);
-                    tv_distance.setText(String.valueOf(stepCount*0.7/1000));
-                    tv_calorie.setText(String.valueOf(stepCount*0.0235));
+                    tv_distance.setText(CommonUtil.formatFloat(stepCount * 0.7 / 1000));
+                    tv_calorie.setText(CommonUtil.formatFloat(stepCount * 0.0235));
                 }
             });
         }
