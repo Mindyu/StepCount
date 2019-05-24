@@ -56,4 +56,5 @@ dependencies {
     // 滑动管理类
     implementation 'com.jude:swipebackhelper:2.1.5'
     implementation files('libs/achartengine-1.1.0.jar')
+    implementation project(path: ':library')
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.mindyu.library.UpdateChecker;
 import com.mindyu.step.R;
 import com.mindyu.step.activity.AboutActivity;
 import com.mindyu.step.activity.LimitSettingActivity;
@@ -82,8 +83,7 @@ public class UserFragment extends Fragment {
         soft_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserActivity.class);
-                startActivity(intent);
+                UpdateChecker.checkForDialog(getContext());
             }
         });
         sensor_test.setOnClickListener(new View.OnClickListener() {
