@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,8 +84,12 @@ public class HotTopicFragment extends Fragment {
         topbar.setListener(new CommonTitleBar.OnTitleBarListener() {
             @Override
             public void onClicked(View v, int action, String extra) {
-                if (action == CommonTitleBar.ACTION_RIGHT_BUTTON) {
-                    Toast.makeText(getContext(), "搜索", Toast.LENGTH_SHORT).show();
+                if (action == CommonTitleBar.ACTION_SEARCH_SUBMIT) {
+                    String key = topbar.getCenterSearchEditText().getText().toString();
+                    Log.d(TAG, "搜索关键字：" + key);
+                    // 异步获取新闻信息
+                    refresh_layout.setRefreshing(true);    // 显示或隐藏刷新进度条
+                    new NewsTask().execute(key.trim());
                 }
             }
         });
@@ -161,6 +166,7 @@ public class HotTopicFragment extends Fragment {
         refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                topbar.getCenterSearchEditText().setText("");
                 new NewsTask().execute();
             }
         });
@@ -179,16 +185,25 @@ public class HotTopicFragment extends Fragment {
         return (T) emptyView;
     }
 
-    public class NewsTask extends AsyncTask<Void, Void, List<News>> {
+    public class NewsTask extends AsyncTask<String, Integer, List<News>> {
 
         @Override
-        protected List<News> doInBackground(Void... voids) {
+        protected List<News> doInBackground(String... keywords) {
             OkHttpClient okHttpClient = new OkHttpClient();
 
-            Request request = new Request.Builder()
-                    // .url("https://www.apiopen.top/journalismApi")
-                    .url("https://api.jisuapi.com/news/get?channel=%E5%81%A5%E5%BA%B7&start=0&num=20&appkey=f3593fb14811078e")
-                    .build();
+            Request request;
+            if (keywords == null || keywords.length == 0 || "".equals(keywords[0].trim())) {
+                request = new Request.Builder()
+                        // .url("https://www.apiopen.top/journalismApi")
+                        .url("https://api.jisuapi.com/news/get?channel=%E5%81%A5%E5%BA%B7&start=0&num=20&appkey=f3593fb14811078e")
+                        .build();
+            } else {
+                request = new Request.Builder()
+                        // .url("https://www.apiopen.top/journalismApi")
+                        .url("https://api.jisuapi.com/news/search?keyword=" + keywords[0].trim() + "&appkey=f3593fb14811078e")
+                        .build();
+            }
+
             Call call = okHttpClient.newCall(request);
             try {
                 Response response = call.execute();
@@ -215,6 +230,10 @@ public class HotTopicFragment extends Fragment {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        @Override
         protected void onPostExecute(List<News> result) {
             refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
             if (result == null) {
@@ -228,6 +247,11 @@ public class HotTopicFragment extends Fragment {
             }
             commonAdapter.setDatas(result);
             commonAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onCancelled() {
+            refresh_layout.setRefreshing(false);    // 显示或隐藏刷新进度条
         }
     }
 
@@ -269,7 +293,7 @@ public class HotTopicFragment extends Fragment {
         JsonObject jsonObject = new JsonParser().parse(jsonStr).getAsJsonObject();
         jsonObject = jsonObject.getAsJsonObject("result");
 
-        if (jsonObject==null || !jsonObject.has("list"))
+        if (jsonObject == null || !jsonObject.has("list"))
             return newsList;
         //需要遍历的数组
         JsonArray jsonArray = jsonObject.getAsJsonArray("list");

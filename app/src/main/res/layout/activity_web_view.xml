@@ -13,17 +13,25 @@
         titlebar:centerType="none"
         titlebar:fillStatusBar="true"
 
-        titlebar:leftType="textView"
         titlebar:leftText="新闻咨询"
         titlebar:leftTextColor="@color/white"
         titlebar:leftTextSize="22sp"
+        titlebar:leftType="textView"
 
         titlebar:statusBarMode="light"
-        titlebar:titleBarHeight="50dp"/>
+        titlebar:titleBarHeight="50dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:progressDrawable="@drawable/pg"
+        android:visibility="gone" />
 
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

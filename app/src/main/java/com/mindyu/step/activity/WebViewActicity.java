@@ -2,18 +2,25 @@ package com.mindyu.step.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import com.mindyu.step.R;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
+import java.lang.annotation.Target;
+
 public class WebViewActicity extends SwipeBackActivity {
 
+    private String TAG = "WebViewActicity";
     private CommonTitleBar topbar;
+    private ProgressBar progressBar;
     private WebView webView;
 
     @Override
@@ -27,6 +34,7 @@ public class WebViewActicity extends SwipeBackActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String url = bundle.getString("url");
+            Log.d(TAG, "加载资讯：" + url);
             webView.loadUrl(url);
         } else {
             this.finish();
@@ -35,6 +43,7 @@ public class WebViewActicity extends SwipeBackActivity {
 
     private void initView() {
         webView = findViewById(R.id.web_view);
+        progressBar = findViewById(R.id.progressBar);
         topbar = findViewById(R.id.topbar);
         topbar.setBackgroundResource(R.drawable.shape_gradient);
     }
@@ -59,7 +68,18 @@ public class WebViewActicity extends SwipeBackActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setLoadsImagesAutomatically(true);
 
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient(){
+                    @Override
+                    public void onProgressChanged(WebView view, int newProgress) {
+                        if(newProgress==100){
+                            progressBar.setVisibility(View.GONE);//加载完网页进度条消失
+                        }
+                        else{
+                            progressBar.setVisibility(View.VISIBLE);//开始加载网页时显示进度条
+                            progressBar.setProgress(newProgress);//设置进度值
+                        }
+                    }
+                });
         //从一个网页跳转到另一个网页时，目标网页仍在当前webview中显示
         webView.setWebViewClient(new WebViewClient() {
             @Override

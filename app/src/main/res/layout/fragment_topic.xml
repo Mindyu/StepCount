@@ -1,5 +1,4 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,19 +9,20 @@
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        titlebar:centerType="none"
-        titlebar:fillStatusBar="true"
 
-        titlebar:leftType="textView"
+        titlebar:centerSearchRightType="delete"
+        titlebar:centerType="searchView"
+        titlebar:fillStatusBar="true"
         titlebar:leftText="发现"
         titlebar:leftTextColor="@color/white"
         titlebar:leftTextSize="22sp"
-        titlebar:rightType="imageButton"
-        titlebar:rightImageResource="@android:drawable/ic_menu_search"
+
+        titlebar:leftType="textView"
+        titlebar:rightType="none"
 
         titlebar:statusBarMode="light"
-        titlebar:titleBarHeight="50dp"/>
-
+        titlebar:titleBarHeight="50dp" />
+    
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swiperefreshlayout"
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         <ListView
             android:id="@+id/list_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

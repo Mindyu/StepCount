@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onTabChange(int position, String name, View view) {
                         mBottomBar.setSpot(position, false);
                     }
-                })
-                .setSpot(2, true);
+                });
+                // .setSpot(2, true);
     }
 
     public void setShowTabBar(boolean isShow){
