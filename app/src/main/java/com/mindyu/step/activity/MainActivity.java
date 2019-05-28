@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBottomBar =findViewById(R.id.bottom_bar);
 
+        mBottomBar =findViewById(R.id.bottom_bar);
         mBottomBar.init(getSupportFragmentManager(), 1080, 1920)
 
                 .addTabItem("首页", R.mipmap.ic_common_tab_index_select, R.mipmap.ic_common_tab_index_unselect, StepFragment.class)

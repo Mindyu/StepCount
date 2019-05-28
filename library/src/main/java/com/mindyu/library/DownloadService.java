@@ -70,8 +70,6 @@ public class DownloadService extends IntentService {
 
             ApkUtils.installAPk(this, apkFile);
 
-            notificationHelper.cancel();
-
         } catch (Exception e) {
             Log.e(TAG, "download apk file error:" + e.getMessage());
         } finally {

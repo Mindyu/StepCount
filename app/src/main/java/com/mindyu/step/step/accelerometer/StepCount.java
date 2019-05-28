@@ -7,10 +7,10 @@ public class StepCount implements StepCountListener {
 
     private int count = 0;
     private int mCount = 0;
-    private StepValuePassListener mStepValuePassListener;
     private long timeOfLastPeak = 0;
     private long timeOfThisPeak = 0;
     private StepDetector stepDetector;
+    private StepValuePassListener mStepValuePassListener;   ////接口用来传递步数变化
 
     public StepCount() {
         stepDetector = new StepDetector();
@@ -56,7 +56,7 @@ public class StepCount implements StepCountListener {
 
 
     public void setSteps(int initValue) {
-        this.mCount = initValue;
+        this.mCount = initValue;     //接收上层调用传递过来的当前步数
         this.count = 0;
         timeOfLastPeak = 0;
         timeOfThisPeak = 0;

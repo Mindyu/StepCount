@@ -12,33 +12,48 @@
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        titlebar:centerType="none"
         titlebar:fillStatusBar="true"
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"
 
         titlebar:leftType="textView"
         titlebar:leftText="关于系统"
         titlebar:leftTextColor="@color/white"
         titlebar:leftTextSize="22sp"
 
-        titlebar:statusBarMode="light"
-        titlebar:titleBarHeight="50dp"/>
+        titlebar:centerType="none"/>
+
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="150dp"
+        android:src="@mipmap/logo"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="30dp"
         android:textAlignment="center"
         android:textSize="28sp"
         android:textColor="@color/black"
         android:text="运动管理系统"/>
 
     <TextView
-        android:id="@+id/made"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="50dp"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:text="Made by 琪琪"/>
+        android:text="版本：1.0"/>
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:text="Made by mindyu"/>
 
 </LinearLayout>

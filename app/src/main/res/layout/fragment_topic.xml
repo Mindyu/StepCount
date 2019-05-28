@@ -9,19 +9,21 @@
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        titlebar:centerSearchRightType="delete"
-        titlebar:centerType="searchView"
+        titlebar:statusBarMode="light"
+        titlebar:titleBarHeight="50dp"
         titlebar:fillStatusBar="true"
+
         titlebar:leftText="发现"
         titlebar:leftTextColor="@color/white"
         titlebar:leftTextSize="22sp"
-
         titlebar:leftType="textView"
+
+        titlebar:centerType="searchView"
+        titlebar:centerSearchRightType="delete"
+
         titlebar:rightType="none"
 
-        titlebar:statusBarMode="light"
-        titlebar:titleBarHeight="50dp" />
+        />
     
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swiperefreshlayout"

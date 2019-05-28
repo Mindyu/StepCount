@@ -8,20 +8,21 @@
     android:background="@color/white"
     tools:context=".activity.UserActivity">
 
+    <!--自定义标题栏-->
     <com.wuhenzhizao.titlebar.widget.CommonTitleBar xmlns:titlebar="http://schemas.android.com/apk/res-auto"
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        titlebar:centerType="none"
+        titlebar:titleBarHeight="50dp"
         titlebar:fillStatusBar="true"
+        titlebar:statusBarMode="light"
 
         titlebar:leftType="textView"
         titlebar:leftText="用户管理"
-        titlebar:leftTextColor="@color/white"
         titlebar:leftTextSize="22sp"
+        titlebar:leftTextColor="@color/white"
 
-        titlebar:statusBarMode="light"
-        titlebar:titleBarHeight="50dp"/>
+        titlebar:centerType="none" />
 
     <LinearLayout
         android:id="@+id/user_nickname"
@@ -61,9 +62,9 @@
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipToPadding="false"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:orientation="horizontal">
+        <!--android:clipToPadding="false"-->
 
         <TextView
             android:layout_width="match_parent"

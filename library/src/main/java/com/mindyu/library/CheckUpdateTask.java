@@ -10,11 +10,6 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-/**
- * @author feicien (ithcheng@gmail.com)
- * @since 2016-07-05 19:21
- */
 class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 
     private ProgressDialog dialog;

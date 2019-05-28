@@ -53,7 +53,7 @@ public class LimitSettingActivity extends SwipeBackActivity {
                                 "com.samsung.android.sm.ui.ram.AutoRunActivity");
                     } else if (CommonUtil.getMobileType().equals("HUAWEI")) { // 华为测试通过
                         componentName = new ComponentName("com.huawei.systemmanager",
-                                "com.huawei.systemmanager.optimize.process.ProtectActivity");
+                                "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity");
                     } else if (CommonUtil.getMobileType().equals("vivo")) { // VIVO测试通过
                         componentName = ComponentName.unflattenFromString("com.iqoo.secure" +
                                 "/.safeguard.PurviewTabActivity");

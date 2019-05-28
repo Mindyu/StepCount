@@ -23,7 +23,7 @@ public class StepDetector implements SensorEventListener {
     private int continueUpCount = 0;
     //上一点的持续上升的次数，为了记录波峰的上升次数
     private int continueUpFormerCount = 0;
-    //上一点的状态，上升还是下降
+    //上一点的状态，上升还是下降，上升为true下降为false
     private boolean lastStatus = false;
     //波峰值
     private float peakOfWave = 0;
@@ -50,8 +50,7 @@ public class StepDetector implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         System.arraycopy(event.values,0, oriValues,0,3);
-        gravityNew = (float) Math.sqrt(oriValues[0] * oriValues[0]
-                + oriValues[1] * oriValues[1] + oriValues[2] * oriValues[2]);
+        gravityNew = (float) Math.sqrt(oriValues[0] * oriValues[0] + oriValues[1] * oriValues[1] + oriValues[2] * oriValues[2]);
         detectorNewStep(gravityNew);
     }
 
@@ -77,8 +76,7 @@ public class StepDetector implements SensorEventListener {
             if (detectorPeak(values, gravityOld)) {
                 timeOfLastPeak = timeOfThisPeak;
                 timeOfNow = System.currentTimeMillis();
-                if (timeOfNow - timeOfLastPeak >= TimeInterval
-                        && (peakOfWave - valleyOfWave >= ThreadValue)) {
+                if (timeOfNow - timeOfLastPeak >= TimeInterval && (peakOfWave - valleyOfWave >= ThreadValue)) {
                     timeOfThisPeak = timeOfNow;
                     /*
                      * 更新界面的处理，不涉及到算法
@@ -89,8 +87,7 @@ public class StepDetector implements SensorEventListener {
                      * */
                     mStepListeners.countStep();
                 }
-                if (timeOfNow - timeOfLastPeak >= TimeInterval
-                        && (peakOfWave - valleyOfWave >= InitialValue)) {
+                if (timeOfNow - timeOfLastPeak >= TimeInterval && (peakOfWave - valleyOfWave >= InitialValue)) {
                     timeOfThisPeak = timeOfNow;
                     ThreadValue = peakValleyThread(peakOfWave - valleyOfWave);
                 }
@@ -121,8 +118,7 @@ public class StepDetector implements SensorEventListener {
             isDirectionUp = false;
         }
 
-        if (!isDirectionUp && lastStatus
-                && (continueUpFormerCount >= 2 || oldValue >= 20)) {
+        if (!isDirectionUp && lastStatus && (continueUpFormerCount >= 2 || oldValue >= 20)) {
             peakOfWave = oldValue;
             return true;
         } else if (!lastStatus && isDirectionUp) {

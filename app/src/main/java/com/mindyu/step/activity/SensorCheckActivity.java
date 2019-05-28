@@ -69,7 +69,7 @@ public class SensorCheckActivity extends SwipeBackActivity {
                 if (Intent.ACTION_SCREEN_ON.equals(action)) {
                     Log.d(TAG, "screen on");
                     int interval = StepService.CURRENT_STEP - initialStepCount;
-                    if (interval >= 9) {
+                    if (interval >= 1) {
                         mCheckIv.setBackground(getResources().getDrawable(R.mipmap.check_success));
                     } else {
                         mCheckIv.setBackground(getResources().getDrawable(R.mipmap.check_fail));

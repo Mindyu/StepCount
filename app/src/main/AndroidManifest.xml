@@ -65,6 +65,7 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </service>
+
         <!-- 内容提供器注册 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
